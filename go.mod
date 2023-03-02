@@ -1,4 +1,4 @@
-module github.com/asadzeynal/csgo-reaction-calculator
+module github.com/asadzeynal/csgo-live-map
 
 go 1.20
 
