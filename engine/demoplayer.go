@@ -8,8 +8,6 @@ import (
 )
 
 type DemoPlayer struct {
-	paused        bool
-	currentRound  int
 	playbackSpeed float64
 	mapName       string
 	parser        demoinfocs.Parser
@@ -17,23 +15,17 @@ type DemoPlayer struct {
 
 var player *DemoPlayer = nil
 
-func (p *DemoPlayer) Pause() {
-	p.paused = true
-}
-
-func (p *DemoPlayer) Play() {
-	p.paused = false
-}
-
-func (p *DemoPlayer) Close() {
-	if player != nil && player.parser != nil {
-		p.parser.Close()
+func (dp *DemoPlayer) Close() {
+	if dp != nil && dp.parser != nil {
+		dp.parser.Close()
 	}
 	player = nil
 }
 
-func NextTick() {
-
+func (dp *DemoPlayer) NextTick() StateResult {
+	dp.parser.ParseNextFrame()
+	players := dp.parser.GameState().Participants().Playing()
+	return processOneTick(IncomingState{Players: players})
 }
 
 func GetPlayer(file *os.File) (*DemoPlayer, error) {
@@ -52,12 +44,8 @@ func GetPlayer(file *os.File) (*DemoPlayer, error) {
 		p.ParseNextFrame()
 	}
 
-	p.GameState().Participants().Playing()
-
 	if player == nil {
 		player = &DemoPlayer{
-			paused:        true,
-			currentRound:  1,
 			playbackSpeed: 1.0,
 			mapName:       mapName,
 			parser:        p,
