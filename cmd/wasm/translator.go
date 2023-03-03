@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"syscall/js"
 
 	"github.com/asadzeynal/csgo-live-map/engine"
@@ -14,9 +13,9 @@ func init() {
 	document = js.Global().Get("document")
 }
 
-func setOnclickHandler(element js.Value) {
+func setOnclickHandler(element js.Value, f func()) {
 	element.Set("onclick", js.FuncOf(func(v js.Value, x []js.Value) any {
-		fmt.Println("button clicked")
+		f()
 		return nil
 	}))
 }

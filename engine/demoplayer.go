@@ -10,7 +10,7 @@ import (
 )
 
 type DemoPlayer struct {
-	isPaused      bool
+	IsPaused      bool
 	mapName       string
 	parser        demoinfocs.Parser
 	e             *engine
@@ -29,18 +29,28 @@ func (dp *DemoPlayer) Close() {
 	player = nil
 }
 
+func (dp *DemoPlayer) PlayPause() {
+	if dp.IsPaused {
+		dp.Play()
+		return
+	}
+	dp.Pause()
+}
+
 func (dp *DemoPlayer) Pause() {
-	if dp.isPaused {
+	if dp.IsPaused {
 		return
 	}
 	dp.ticker.Stop()
+	dp.IsPaused = true
 }
 
 func (dp *DemoPlayer) Play() {
-	if !dp.isPaused {
+	if !dp.IsPaused {
 		return
 	}
 	dp.refreshTicker()
+	dp.IsPaused = false
 }
 
 func (dp *DemoPlayer) refreshTicker() {
@@ -106,7 +116,7 @@ func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 	ticker.Stop()
 
 	player = &DemoPlayer{
-		isPaused:      true,
+		IsPaused:      true,
 		mapName:       mapName,
 		parser:        p,
 		e:             &e,

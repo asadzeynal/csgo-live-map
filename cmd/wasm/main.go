@@ -11,13 +11,14 @@ func main() {
 	stopChan := make(chan bool)
 	fileInput := getElementById("file_input")
 	playButton := getElementById("play_button")
-	setOnclickHandler(playButton)
 
 	file := <-setFileInputHandler(fileInput)
 	player, err := engine.GetPlayer(bytes.NewReader(file))
 	if err != nil {
 		log.Panic("error when getting player: %v", err)
 	}
+
+	setOnclickHandler(playButton, player.PlayPause)
 
 	for {
 		state := player.WaitForStateUpdate()
