@@ -23,9 +23,9 @@ func (dp *DemoPlayer) Close() {
 	player = nil
 }
 
-func (dp *DemoPlayer) NextTick() *StateResult {
+func (dp *DemoPlayer) NextTick() StateResult {
 	if dp.parser.Progress() == 1 {
-		return nil
+		return StateResult{}
 	}
 	dp.parser.ParseNextFrame()
 	res := dp.e.getUsefulState(dp.parser.GameState())
