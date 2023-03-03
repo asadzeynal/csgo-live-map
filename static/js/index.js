@@ -3,7 +3,6 @@ var ctx;
 
 function init() {
     drawMap()
-    initFileSelector()
 }
 
 function drawMap() {
@@ -25,10 +24,3 @@ function drawPlayer(player) {
     console.log(player)
 }
 
-function initFileSelector() {
-    const fileSelector = document.getElementById('file-selector');
-    fileSelector.addEventListener('change', (event) => {
-        const fileList = event.target.files;
-        setDemoFile(fileList[0])
-    });
-}

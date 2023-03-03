@@ -62,7 +62,7 @@ func (dp *DemoPlayer) nextTick() StateResult {
 	return res
 }
 
-func (dp *DemoPlayer) GetState() StateResult {
+func (dp *DemoPlayer) WaitForStateUpdate() StateResult {
 	return <-dp.result
 }
 

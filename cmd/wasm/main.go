@@ -9,8 +9,10 @@ import (
 func main() {
 	stopChan := make(chan bool)
 	fileInput := getElementById("file_input")
+	playButton := getElementById("play_button")
+	setOnclickHandler(playButton)
 
-	fileReaderChan := setFileInputHandler(fileInput, "oninput")
+	fileReaderChan := setFileInputHandler(fileInput)
 	fileReader := <-fileReaderChan
 
 	player, err := engine.GetPlayer(fileReader)
@@ -19,7 +21,7 @@ func main() {
 	}
 
 	for {
-		state := player.GetState()
+		state := player.WaitForStateUpdate()
 		drawCurrentState(state)
 	}
 	defer player.Close()

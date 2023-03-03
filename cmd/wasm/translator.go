@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"syscall/js"
 
 	"github.com/asadzeynal/csgo-live-map/engine"
@@ -12,6 +13,13 @@ var document js.Value
 
 func init() {
 	document = js.Global().Get("document")
+}
+
+func setOnclickHandler(element js.Value) {
+	element.Set("onclick", js.FuncOf(func(v js.Value, x []js.Value) any {
+		fmt.Println("button clicked")
+		return nil
+	}))
 }
 
 func setFileInputHandler(element js.Value) chan *bytes.Reader {
@@ -30,7 +38,7 @@ func setFileInputHandler(element js.Value) chan *bytes.Reader {
 }
 
 func getElementById(id string) js.Value {
-	return document.Call("getElementById", "file_input")
+	return document.Call("getElementById", id)
 }
 
 func drawCurrentState(state engine.StateResult) {
@@ -39,7 +47,7 @@ func drawCurrentState(state engine.StateResult) {
 		panic(err)
 	}
 
-	js.Global.Call("drawPlayer", string(stateJson))
+	js.Global().Call("drawPlayer", string(stateJson))
 }
 
 // func f(v js.Value, x []js.Value) any {
