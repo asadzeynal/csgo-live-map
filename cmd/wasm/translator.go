@@ -49,7 +49,7 @@ func drawCurrentState(state engine.StateResult) {
 		panic(err)
 	}
 
-	js.Global().Call("drawPlayer", string(stateJson))
+	js.Global().Call("updateState", string(stateJson))
 }
 
 // func f(v js.Value, x []js.Value) any {

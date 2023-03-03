@@ -5,8 +5,8 @@ import (
 	"io"
 	"time"
 
-	"github.com/markus-wa/demoinfocs-golang/msg"
 	"github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs"
+	"github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs/msg"
 )
 
 type DemoPlayer struct {
@@ -76,6 +76,15 @@ func (dp *DemoPlayer) WaitForStateUpdate() StateResult {
 	return <-dp.result
 }
 
+func (dp *DemoPlayer) handleNetMessage(msg *msg.CSVCMsg_ServerInfo) {
+	// fmt.Println(dp.mapName, msg.MapCrc)
+	// Get metadata for the map that the game was played on for coordinate translations
+	// mapMetadata = GetMapMetadata(mapName, msg.GetMapCrc())
+	// fmt.Println(mapMetadata)
+	fmt.Println(msg.MapCrc, "msg")
+
+}
+
 func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 	if player != nil {
 		return player, nil
@@ -89,42 +98,35 @@ func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 
 	mapName := header.MapName
 
+	player = &DemoPlayer{
+		mapName:       mapName,
+		parser:        p,
+		IsPaused:      true,
+		playbackSpeed: 1.0,
+		result:        make(chan StateResult),
+	}
+
 	if mapName != "de_ancient" {
 		return nil, fmt.Errorf("only de_ancient is supported now")
 	}
 
-	var mapMetadata Map
+	e := engine{}
 	p.RegisterNetMessageHandler(func(msg *msg.CSVCMsg_ServerInfo) {
-		fmt.Println(mapName, msg.MapCrc)
-		// Get metadata for the map that the game was played on for coordinate translations
-		mapMetadata = GetMapMetadata(mapName, msg.GetMapCrc())
-		fmt.Println(mapMetadata)
+		mmd := GetMapMetadata(mapName, msg.GetMapCrc())
+		e.mapMetadata = &mmd
 	})
 
 	for !p.GameState().IsMatchStarted() {
 		p.ParseNextFrame()
 	}
-
-	e := engine{
-		mapMetadata: &mapMetadata,
-	}
-
 	tickRate := p.TickRate()
-	speed := 1.0
 
-	ticker := time.NewTicker(time.Second / time.Duration(tickRate) * time.Duration(speed))
+	ticker := time.NewTicker(time.Second / time.Duration(tickRate) * time.Duration(player.playbackSpeed))
 	ticker.Stop()
 
-	player = &DemoPlayer{
-		IsPaused:      true,
-		mapName:       mapName,
-		parser:        p,
-		e:             &e,
-		playbackSpeed: speed,
-		tickRate:      tickRate,
-		ticker:        ticker,
-		result:        make(chan StateResult),
-	}
+	player.e = &e
+	player.tickRate = tickRate
+	player.ticker = ticker
 
 	player.initPlayback()
 
