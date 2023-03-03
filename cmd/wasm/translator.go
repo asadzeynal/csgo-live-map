@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"syscall/js"
@@ -22,16 +21,20 @@ func setOnclickHandler(element js.Value) {
 	}))
 }
 
-func setFileInputHandler(element js.Value) chan *bytes.Reader {
-	result := make(chan *bytes.Reader)
+func setFileInputHandler(element js.Value) chan []byte {
+	result := make(chan []byte)
 	element.Set("oninput", js.FuncOf(func(v js.Value, x []js.Value) any {
-		element.Get("files").Call("item", 0).Call("arrayBuffer").Call("then", func(v js.Value, x []js.Value) any {
-			data := js.Global().Get("Uint8Array").New(x[0])
-			dst := make([]byte, data.Get("length").Int())
-			js.CopyBytesToGo(dst, data)
-			result <- bytes.NewReader(dst)
-			return nil
-		})
+		element.Get("files").
+			Call("item", 0).
+			Call("arrayBuffer").
+			Call("then",
+				js.FuncOf(func(v js.Value, x []js.Value) any {
+					data := js.Global().Get("Uint8Array").New(x[0])
+					dst := make([]byte, data.Get("length").Int())
+					js.CopyBytesToGo(dst, data)
+					result <- dst
+					return nil
+				}))
 		return nil
 	}))
 	return result

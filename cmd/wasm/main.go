@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"log"
 
 	"github.com/asadzeynal/csgo-live-map/engine"
@@ -12,10 +13,8 @@ func main() {
 	playButton := getElementById("play_button")
 	setOnclickHandler(playButton)
 
-	fileReaderChan := setFileInputHandler(fileInput)
-	fileReader := <-fileReaderChan
-
-	player, err := engine.GetPlayer(fileReader)
+	file := <-setFileInputHandler(fileInput)
+	player, err := engine.GetPlayer(bytes.NewReader(file))
 	if err != nil {
 		log.Panic("error when getting player: %v", err)
 	}
