@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 
@@ -24,19 +23,14 @@ func (dp *DemoPlayer) Close() {
 	player = nil
 }
 
-func (dp *DemoPlayer) NextTick() string {
+func (dp *DemoPlayer) NextTick() *StateResult {
 	if dp.parser.Progress() == 1 {
-		return ""
+		return nil
 	}
 	dp.parser.ParseNextFrame()
 	res := dp.e.getUsefulState(dp.parser.GameState())
 
-	json, err := json.Marshal(res)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(json)
+	return res
 }
 
 func GetPlayer(file io.Reader) (*DemoPlayer, error) {
@@ -57,6 +51,12 @@ func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 	}
 
 	var mapMetadata Map
+	p.RegisterNetMessageHandler(func(msg *msg.CSVCMsg_ServerInfo) {
+		fmt.Println(mapName, msg.MapCrc)
+		// Get metadata for the map that the game was played on for coordinate translations
+		mapMetadata = GetMapMetadata(mapName, msg.GetMapCrc())
+		fmt.Println(mapMetadata)
+	})
 
 	for !p.GameState().IsMatchStarted() {
 		p.ParseNextFrame()
@@ -73,20 +73,4 @@ func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 	}
 
 	return player, nil
-}
-
-func getMapMetadata(p demoinfocs.Parser, mapName string) Map {
-	var metadata Map
-	p.RegisterNetMessageHandler(func(msg *msg.CSVCMsg_ServerInfo) {
-		fmt.Println(mapName, msg.GetMapCrc())
-		// Get metadata for the map that the game was played on for coordinate translations
-		metadata = GetMapMetadata(mapName, msg.GetMapCrc())
-		fmt.Println(metadata)
-	})
-	return metadata
-}
-
-type promise struct {
-	done chan struct{}
-	data Map
 }
