@@ -17,6 +17,11 @@ func main() {
 	if err != nil {
 		log.Panic("error when getting player: %v", err)
 	}
+
+	for {
+		state := player.GetState()
+		drawCurrentState(state)
+	}
 	defer player.Close()
 
 	<-stopChan

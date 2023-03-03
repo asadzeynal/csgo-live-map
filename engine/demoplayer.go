@@ -10,12 +10,14 @@ import (
 )
 
 type DemoPlayer struct {
+	isPaused      bool
 	mapName       string
 	parser        demoinfocs.Parser
 	e             *engine
 	playbackSpeed float64
 	tickRate      float64
 	ticker        *time.Ticker
+	result        chan StateResult
 }
 
 var player *DemoPlayer = nil
@@ -28,10 +30,16 @@ func (dp *DemoPlayer) Close() {
 }
 
 func (dp *DemoPlayer) Pause() {
+	if dp.isPaused {
+		return
+	}
 	dp.ticker.Stop()
 }
 
 func (dp *DemoPlayer) Play() {
+	if !dp.isPaused {
+		return
+	}
 	dp.refreshTicker()
 }
 
@@ -44,7 +52,7 @@ func (dp *DemoPlayer) ChangeSpeed(speed float64) {
 	dp.refreshTicker()
 }
 
-func (dp *DemoPlayer) NextTick() StateResult {
+func (dp *DemoPlayer) nextTick() StateResult {
 	if dp.parser.Progress() == 1 {
 		return StateResult{}
 	}
@@ -52,6 +60,10 @@ func (dp *DemoPlayer) NextTick() StateResult {
 	res := dp.e.getUsefulState(dp.parser.GameState())
 
 	return res
+}
+
+func (dp *DemoPlayer) GetState() StateResult {
+	return <-dp.result
 }
 
 func GetPlayer(file io.Reader) (*DemoPlayer, error) {
@@ -91,15 +103,32 @@ func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 	speed := 1.0
 
 	ticker := time.NewTicker(time.Second / time.Duration(tickRate) * time.Duration(speed))
+	ticker.Stop()
 
 	player = &DemoPlayer{
+		isPaused:      true,
 		mapName:       mapName,
 		parser:        p,
 		e:             &e,
 		playbackSpeed: speed,
 		tickRate:      tickRate,
 		ticker:        ticker,
+		result:        make(chan StateResult),
 	}
 
+	player.initPlayback()
+
 	return player, nil
+}
+
+func (dp *DemoPlayer) initPlayback() {
+	t := dp.ticker
+	c := t.C
+
+	go func() {
+		for {
+			<-c
+			dp.result <- dp.nextTick()
+		}
+	}()
 }
