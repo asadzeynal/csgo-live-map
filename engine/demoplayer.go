@@ -3,15 +3,19 @@ package engine
 import (
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/markus-wa/demoinfocs-golang/msg"
 	"github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs"
 )
 
 type DemoPlayer struct {
-	mapName string
-	parser  demoinfocs.Parser
-	e       *engine
+	mapName       string
+	parser        demoinfocs.Parser
+	e             *engine
+	playbackSpeed float64
+	tickRate      float64
+	ticker        *time.Ticker
 }
 
 var player *DemoPlayer = nil
@@ -21,6 +25,23 @@ func (dp *DemoPlayer) Close() {
 		dp.parser.Close()
 	}
 	player = nil
+}
+
+func (dp *DemoPlayer) Pause() {
+	dp.ticker.Stop()
+}
+
+func (dp *DemoPlayer) Play() {
+	dp.refreshTicker()
+}
+
+func (dp *DemoPlayer) refreshTicker() {
+	dp.ticker.Reset(time.Second / time.Duration(dp.tickRate) * time.Duration(dp.playbackSpeed))
+}
+
+func (dp *DemoPlayer) ChangeSpeed(speed float64) {
+	dp.playbackSpeed = speed
+	dp.refreshTicker()
 }
 
 func (dp *DemoPlayer) NextTick() StateResult {
@@ -66,10 +87,18 @@ func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 		mapMetadata: &mapMetadata,
 	}
 
+	tickRate := p.TickRate()
+	speed := 1.0
+
+	ticker := time.NewTicker(time.Second / time.Duration(tickRate) * time.Duration(speed))
+
 	player = &DemoPlayer{
-		mapName: mapName,
-		parser:  p,
-		e:       &e,
+		mapName:       mapName,
+		parser:        p,
+		e:             &e,
+		playbackSpeed: speed,
+		tickRate:      tickRate,
+		ticker:        ticker,
 	}
 
 	return player, nil
