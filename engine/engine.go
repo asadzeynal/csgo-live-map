@@ -30,7 +30,6 @@ func (e *engine) getUsefulState(state demoinfocs.GameState) StateResult {
 		vec := p.Position()
 		x, y := e.mapMetadata.TranslateScale(vec.X, vec.Y)
 		pos := Position{X: x, Y: y}
-
 		playersData = append(playersData, PlayerData{Position: pos})
 	}
 
