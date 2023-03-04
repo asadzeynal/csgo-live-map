@@ -9,6 +9,18 @@ import (
 	"github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs/msg"
 )
 
+var supportedMaps map[string]struct{} = map[string]struct{}{
+	"de_ancient":  {},
+	"de_cache":    {},
+	"de_dust2":    {},
+	"de_inferno":  {},
+	"de_mirage":   {},
+	"de_nuke":     {},
+	"de_overpass": {},
+	"de_train":    {},
+	"de_vertigo":  {},
+}
+
 type DemoPlayer struct {
 	IsPaused      bool
 	mapName       string
@@ -89,16 +101,16 @@ func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 
 	mapName := header.MapName
 
+	if !isMapSupported(mapName) {
+		return nil, fmt.Errorf("map %v is not supported right now", mapName)
+	}
+
 	player = &DemoPlayer{
 		mapName:       mapName,
 		parser:        p,
 		IsPaused:      true,
 		playbackSpeed: 1.0,
 		result:        make(chan StateResult),
-	}
-
-	if mapName != "de_inferno" {
-		return nil, fmt.Errorf("only de_ancient is supported now")
 	}
 
 	e := engine{}
@@ -134,4 +146,11 @@ func (dp *DemoPlayer) initPlayback() {
 			dp.result <- dp.nextTick()
 		}
 	}()
+}
+
+func isMapSupported(mapName string) bool {
+	if _, ok := supportedMaps[mapName]; ok {
+		return true
+	}
+	return false
 }
