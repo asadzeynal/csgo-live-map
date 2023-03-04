@@ -76,15 +76,6 @@ func (dp *DemoPlayer) WaitForStateUpdate() StateResult {
 	return <-dp.result
 }
 
-func (dp *DemoPlayer) handleNetMessage(msg *msg.CSVCMsg_ServerInfo) {
-	// fmt.Println(dp.mapName, msg.MapCrc)
-	// Get metadata for the map that the game was played on for coordinate translations
-	// mapMetadata = GetMapMetadata(mapName, msg.GetMapCrc())
-	// fmt.Println(mapMetadata)
-	fmt.Println(msg.MapCrc, "msg")
-
-}
-
 func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 	if player != nil {
 		return player, nil
@@ -106,7 +97,7 @@ func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 		result:        make(chan StateResult),
 	}
 
-	if mapName != "de_ancient" {
+	if mapName != "de_inferno" {
 		return nil, fmt.Errorf("only de_ancient is supported now")
 	}
 

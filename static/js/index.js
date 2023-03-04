@@ -20,7 +20,7 @@ function drawMap() {
     img.onload = () => {
         ctx.drawImage(img, 0, 0);
     };
-    img.src = "../img/de_ancient_radar.png";
+    img.src = "../img/de_inferno_radar.png";
 };
 
 function updateState(currentState) {
