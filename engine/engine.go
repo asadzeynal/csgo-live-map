@@ -12,8 +12,10 @@ type StateResult struct {
 
 // Contans current state for a single player
 type PlayerData struct {
-	Position Position
-	Team     byte // 2 = T, 3 = CT
+	Position      Position // Coordinates of player on 1024*1024 map image
+	Team          byte     // 2 = T, 3 = CT
+	IsAlive       bool     // true if player is alive
+	ViewDirection float32  // 0-360 direction where player is looking on the 2d plane
 }
 
 // Position of an entity on the map
@@ -47,7 +49,9 @@ func (e *engine) constructPlayerData(p *common.Player) PlayerData {
 	resPos := Position{X: posX, Y: posY}
 
 	return PlayerData{
-		Position: resPos,
-		Team:     byte(p.Team),
+		Position:      resPos,
+		Team:          byte(p.Team),
+		IsAlive:       p.IsAlive(),
+		ViewDirection: p.ViewDirectionX(),
 	}
 }
