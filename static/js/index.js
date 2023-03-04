@@ -10,17 +10,16 @@ function init() {
     t_p.src = "../img/t_p.png";
     mapCanvas = document.getElementById("game_map");
     playersCanvas = document.getElementById("players_canvas");
-    drawMap()
 }
 
-function drawMap() {
+function drawMap(mapName) {
     ctx = mapCanvas.getContext("2d");
 
     const img = new Image();
     img.onload = () => {
         ctx.drawImage(img, 0, 0);
     };
-    img.src = "../img/de_inferno_radar.png";
+    img.src = `../img/${mapName}_radar.png`;
 };
 
 function updateState(currentState) {
@@ -34,5 +33,4 @@ function updateState(currentState) {
         pos = players[i].Position
         ctx.drawImage(t_p, pos.X, pos.Y, 15, 15);   
     }
-
 }

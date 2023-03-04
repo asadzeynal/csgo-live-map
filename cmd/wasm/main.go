@@ -18,6 +18,8 @@ func main() {
 		log.Panic("error when getting player: %v", err)
 	}
 
+	drawMap(player.MapName)
+
 	setOnclickHandler(playButton, player.PlayPause)
 
 	for {

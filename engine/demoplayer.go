@@ -23,7 +23,7 @@ var supportedMaps map[string]struct{} = map[string]struct{}{
 
 type DemoPlayer struct {
 	IsPaused      bool
-	mapName       string
+	MapName       string
 	parser        demoinfocs.Parser
 	e             *engine
 	playbackSpeed float64
@@ -106,7 +106,7 @@ func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 	}
 
 	player = &DemoPlayer{
-		mapName:       mapName,
+		MapName:       mapName,
 		parser:        p,
 		IsPaused:      true,
 		playbackSpeed: 1.0,

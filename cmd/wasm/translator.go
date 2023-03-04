@@ -48,26 +48,9 @@ func drawCurrentState(state engine.StateResult) {
 	if err != nil {
 		panic(err)
 	}
-
 	js.Global().Call("updateState", string(stateJson))
 }
 
-// func f(v js.Value, x []js.Value) any {
-// 	ticker := time.NewTicker(500 * time.Millisecond)
-// 	done := make(chan bool)
-
-// 	go func() {
-// 		for {
-// 			select {
-// 			case <-done:
-// 				return
-// 			case <-ticker.C:
-// 				state := player.NextTick()
-// 				js.Global().Call("drawPlayer", state)
-// 			}
-// 		}
-// 	}()
-
-// 	return nil
-
-// }
+func drawMap(mapName string) {
+	js.Global().Call("drawMap", mapName)
+}
