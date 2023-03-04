@@ -12,20 +12,15 @@
     </script>
 </head>
 <body onload="init();">
-<div>
-    <input type="file" id="file_input">
-    <button id="play_button">play/pause</button>
-   <div style="position: relative;">
+<div id="screen">
+    <div>
+        <input type="file" id="file_input">
+        <button id="play_button">play/pause</button>
+    </div>
+   <div id="canvas_container">
     <canvas class="game_canvas" id="game_map" width="1024" height="1024"></canvas>
     <canvas class="game_canvas" id="players_canvas" width="1024" height="1024"></canvas>    
    </div>
 </div>
-<script>
-    var inputField = document.querySelector('#inputField')
-    var outputHash = document.querySelector('#outputHash')
-    inputField.addEventListener('keyup', function() {
-        outputHash.innerHTML = sayWaye(inputField.value) // The function 'wasmHash' is defined in the Go code
-    });
-</script>
 </body>
 </html>
