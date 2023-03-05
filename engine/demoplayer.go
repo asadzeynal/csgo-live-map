@@ -1,11 +1,12 @@
 package engine
 
 import (
+	"bytes"
 	"fmt"
-	"io"
 	"time"
 
 	"github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs"
+	"github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs/events"
 	"github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs/msg"
 )
 
@@ -22,6 +23,7 @@ var supportedMaps map[string]struct{} = map[string]struct{}{
 }
 
 type DemoPlayer struct {
+	file          []byte
 	IsPaused      bool
 	MapName       string
 	parser        demoinfocs.Parser
@@ -65,6 +67,17 @@ func (dp *DemoPlayer) Play() {
 	dp.IsPaused = false
 }
 
+func (dp *DemoPlayer) Stop() {
+	dp.Pause()
+	dp.parser.Cancel()
+	dp.parser.Close()
+	dp.parser = demoinfocs.NewParser(bytes.NewReader(dp.file))
+	for !dp.parser.GameState().IsMatchStarted() {
+		dp.parser.ParseNextFrame()
+	}
+	dp.result <- dp.nextTick()
+}
+
 func (dp *DemoPlayer) refreshTicker() {
 	dp.ticker.Reset(time.Second / time.Duration(dp.tickRate) * time.Duration(dp.playbackSpeed))
 }
@@ -79,7 +92,7 @@ func (dp *DemoPlayer) nextTick() StateResult {
 		return StateResult{}
 	}
 	dp.parser.ParseNextFrame()
-	res := dp.e.getUsefulState(dp.parser.GameState())
+	res := dp.e.getUsefulState(dp.parser.GameState(), dp.parser.CurrentTime())
 
 	return res
 }
@@ -88,10 +101,11 @@ func (dp *DemoPlayer) WaitForStateUpdate() StateResult {
 	return <-dp.result
 }
 
-func GetPlayer(file io.Reader) (*DemoPlayer, error) {
+func GetPlayer(fileRaw []byte) (*DemoPlayer, error) {
 	if player != nil {
 		return player, nil
 	}
+	file := bytes.NewReader(fileRaw)
 
 	p := demoinfocs.NewParser(file)
 	header, err := p.ParseHeader()
@@ -106,6 +120,7 @@ func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 	}
 
 	player = &DemoPlayer{
+		file:          fileRaw,
 		MapName:       mapName,
 		parser:        p,
 		IsPaused:      true,
@@ -114,9 +129,18 @@ func GetPlayer(file io.Reader) (*DemoPlayer, error) {
 	}
 
 	e := engine{}
+
 	p.RegisterNetMessageHandler(func(msg *msg.CSVCMsg_ServerInfo) {
 		mmd := GetMapMetadata(mapName, msg.GetMapCrc())
 		e.mapMetadata = &mmd
+	})
+
+	p.RegisterEventHandler(func(event events.RoundFreezetimeEnd) {
+		e.roundFreezeTimeEndAt = p.CurrentTime()
+	})
+
+	p.RegisterEventHandler(func(event events.RoundEnd) {
+		e.roundEndedAt = p.CurrentTime()
 	})
 
 	for !p.GameState().IsMatchStarted() {

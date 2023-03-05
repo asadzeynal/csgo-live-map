@@ -13,7 +13,7 @@ func init() {
 	document = js.Global().Get("document")
 }
 
-func setOnclickHandler(element js.Value, f func()) {
+func setOnClickHandler(element js.Value, f func()) {
 	element.Set("onclick", js.FuncOf(func(v js.Value, x []js.Value) any {
 		f()
 		return nil

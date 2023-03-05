@@ -8,7 +8,6 @@ const dimensions = 768
 function init() {
     homeElement = document.getElementById("home")
     screenElement = document.getElementById("screen")
-    screenElement.style.display = "none"
     mapCanvas = document.getElementById("game_map");
     mapCanvas.width = dimensions
     mapCanvas.height = dimensions
@@ -21,7 +20,7 @@ function init() {
 
 function drawMap(mapName) {
     homeElement.style.display = "none"
-    screenElement.style.display ="grid"
+    screenElement.classList.remove('hidden')
     ctx = mapCanvas.getContext("2d");
     ctx.scale(dimensions/1024, dimensions/1024)
     const img = new Image();
@@ -34,11 +33,13 @@ function drawMap(mapName) {
 function updateState(currentState) {
     ctx = playersCanvas.getContext("2d");
     const state = JSON.parse(currentState)
+    
+    displayTimeLeft(state.RoundTimeLeft)
+
     players = state.Players
 
     ctx.reset()
     ctx.scale(dimensions/1024, dimensions/1024)
-
     for (let i = 0; i < players.length; i++) {
         p = players[i]
         if (p.IsAlive) {
@@ -47,6 +48,16 @@ function updateState(currentState) {
             drawDeadPlayer(ctx, p)
         }
     }
+}
+
+function displayTimeLeft(duration) {
+    let timeElement = document.getElementById("time_left")
+    let minutes = Math.floor(duration / 60)
+    let seconds = duration % 60
+    if (seconds < 10) {
+        seconds = `0${seconds}`
+    }
+    timeElement.textContent = `${minutes}:${seconds}`
 }
 
 function drawDeadPlayer(ctx, p) {

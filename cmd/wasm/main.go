@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"log"
 
 	"github.com/asadzeynal/csgo-live-map/engine"
@@ -10,17 +9,22 @@ import (
 func main() {
 	stopChan := make(chan bool)
 	fileInput := getElementById("file_input")
-	playButton := getElementById("play_button")
 
 	file := <-setFileInputHandler(fileInput)
-	player, err := engine.GetPlayer(bytes.NewReader(file))
+
+	player, err := engine.GetPlayer(file)
 	if err != nil {
 		log.Panic("error when getting player: %v", err)
 	}
 
 	drawMap(player.MapName)
 
-	setOnclickHandler(playButton, player.PlayPause)
+	btnStop := getElementById("stop_button")
+	setOnClickHandler(btnStop, player.Stop)
+	btnPause := getElementById("pause_button")
+	setOnClickHandler(btnPause, player.Pause)
+	btnPlay := getElementById("play_button")
+	setOnClickHandler(btnPlay, player.Play)
 
 	for {
 		state := player.WaitForStateUpdate()

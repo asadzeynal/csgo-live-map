@@ -5,7 +5,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="wasm_exec.js"></script>
     <script src="js/index.js"></script>
-    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.css" rel="stylesheet" /> -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script>
         const go = new Go();
         WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
@@ -22,20 +22,31 @@
             w-full text-sm text-white border-dashed 
             pt-4 pb-4 border border-orange-200
             cursor-pointer bg-transparent focus:outline-none file:bg-transparent file:text-white file:ml-6 file:rounded file:border-solid
-            file:border-orange-200 file:border file:mr-4 file:p-2 hover:file:bg-orange-100 hover:file:text-indigo-500" id="file_input" type="file">
+            file:border-orange-200 file:border file:mr-4 file:p-2 hover:file:bg-orange-100 hover:file:text-gray-700" id="file_input" type="file">
         </div>
     </div>
-<div id="screen" class="grid grid-cols-3 gap-4 items-center	justify-items-center">
-    <img class="col-start-2 col-end-2 h-1/2 grow" src="img/logo_inline.png">
-    <div class="col-start-2 grid-cols-3">
-        <div id="canvas_container" class="relative">
-            <canvas class="absolute top-0 left-0 game_canvas" id="game_map" width="1024" height="1024"></canvas>
-            <canvas class="absolute top-0 left-0 game_canvas" id="players_canvas" width="1024" height="1024"></canvas>        
+    <div id="screen" class="hidden grid grid-cols-3 gap-4 items-center justify-items-center">
+        <img class="col-start-2 col-end-2 h-1/2 grow" src="img/logo_inline.png">
+        <div class="col-start-2 col-end-2 h-1/2 grow" id="match_info">
+            <div id="time_left" class="text-white border-solid border bg-orange-700 border-orange-800 px-4 py-2">0:00</div>
+        </div>
+        <div class="col-start-2 grid-cols-3">
+            <div id="canvas_container" class="relative">
+                <canvas class="absolute top-0 left-0 game_canvas" id="game_map" width="1024" height="1024"></canvas>
+                <canvas class="absolute top-0 left-0 game_canvas" id="players_canvas" width="1024" height="1024"></canvas>        
+            </div>
+        </div>
+        <div id="demo_controls" class="col-start-2 col-end-2 h-1/2 grow">
+            <button class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg" id="stop_button">
+                <i class="material-icons">stop</i>
+            </button>
+            <button class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg" id="pause_button">
+                <i class="material-icons">pause</i>
+            </button>
+            <button class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg" id="play_button">
+                <i class="material-icons">play_arrow</i>
+            </button>
         </div>
     </div>
-   <button id="play_button">play/pause</button>
-</div>
-
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script> -->
 </body>
 </html>

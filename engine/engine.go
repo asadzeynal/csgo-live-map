@@ -1,14 +1,19 @@
 package engine
 
 import (
+	"time"
+
 	"github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs"
 	"github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs/common"
 )
 
 // Contains state for current tick
 type StateResult struct {
-	Players []PlayerData
+	Players       []PlayerData
+	RoundTimeLeft Second
 }
+
+type Second time.Duration
 
 // Contans current state for a single player
 type PlayerData struct {
@@ -26,20 +31,40 @@ type Position struct {
 }
 
 type engine struct {
-	mapMetadata *Map
+	mapMetadata          *Map
+	roundFreezeTimeEndAt time.Duration
+	roundEndedAt         time.Duration
 }
 
 // Responsible for deriving useful state from demoinfocs.GameState and returning it
-func (e *engine) getUsefulState(state demoinfocs.GameState) StateResult {
+func (e *engine) getUsefulState(state demoinfocs.GameState, currentTime time.Duration) StateResult {
 	players := state.Participants().Playing()
 	playersData := make([]PlayerData, 0, len(players))
+
+	timeLimit, err := state.Rules().RoundTime()
+	if err != nil {
+		timeLimit = 115 * time.Nanosecond
+	}
+
+	roundTime := e.calculateRoundLeftTime(timeLimit, currentTime)
 
 	for i := range players {
 		pd := e.constructPlayerData(players[i])
 		playersData = append(playersData, pd)
 	}
 
-	return StateResult{Players: playersData}
+	return StateResult{
+		Players:       playersData,
+		RoundTimeLeft: roundTime,
+	}
+}
+
+func (e *engine) calculateRoundLeftTime(timeLimit time.Duration, currentTime time.Duration) Second {
+	if e.roundEndedAt >= e.roundFreezeTimeEndAt {
+		return 0
+	} else {
+		return Second((timeLimit - (currentTime - e.roundFreezeTimeEndAt)) / time.Second)
+	}
 }
 
 // Constructs and returns PlayerData object from demoinfocs.common.Player
