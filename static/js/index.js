@@ -22,7 +22,7 @@ function drawMap(mapName) {
     homeElement.style.display = "none"
     screenElement.classList.remove('hidden')
     ctx = mapCanvas.getContext("2d");
-    ctx.scale(dimensions/1024, dimensions/1024)
+    ctx.scale(dimensions / 1024, dimensions / 1024)
     const img = new Image();
     img.onload = () => {
         ctx.drawImage(img, 0, 0);
@@ -33,15 +33,19 @@ function drawMap(mapName) {
 function updateState(currentState) {
     ctx = playersCanvas.getContext("2d");
     const state = JSON.parse(currentState)
-    
+
     displayTimeLeft(state.RoundTimeLeft)
 
-    players = state.Players
+    teamT = state.TeamT
+    teamCt = state.TeamCt
+
+    document.getElementById("clan_tag_t").textContent = teamT.ClanTag
+    document.getElementById("clan_tag_ct").textContent = teamCt.ClanTag
 
     ctx.reset()
-    ctx.scale(dimensions/1024, dimensions/1024)
-    for (let i = 0; i < players.length; i++) {
-        p = players[i]
+    ctx.scale(dimensions / 1024, dimensions / 1024)
+    for (let i = 0; i < teamT.Players.length + teamCt.Players.length; i++) {
+        p = [...teamT.Players, ...teamCt.Players][i]
         if (p.IsAlive) {
             drawAlivePlayer(ctx, p)
         } else {
@@ -77,7 +81,7 @@ function drawDeadPlayer(ctx, p) {
 }
 
 function drawAlivePlayer(ctx, p) {
-    const r = 6
+    const r = 7
     pos = p.Position
     if (p.Team == 2) {
         ctx.fillStyle = "orange"
@@ -91,9 +95,9 @@ function drawAlivePlayer(ctx, p) {
     ctx.translate(-pos.X, -pos.Y)
     ctx.beginPath();
     ctx.arc(pos.X, pos.Y, r, 0, 2 * Math.PI);
-    ctx.moveTo(pos.X - r/2, pos.Y + r + 2);
+    ctx.moveTo(pos.X - r / 2, pos.Y + r + 2);
     ctx.lineTo(pos.X, pos.Y + r + r);
-    ctx.lineTo(pos.X + r/2, pos.Y + r + 2);
+    ctx.lineTo(pos.X + r / 2, pos.Y + r + 2);
     ctx.closePath()
     ctx.fill();
     ctx.restore();

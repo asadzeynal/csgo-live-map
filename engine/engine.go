@@ -9,14 +9,22 @@ import (
 
 // Contains state for current tick
 type StateResult struct {
-	Players       []PlayerData
+	TeamT         Team
+	TeamCt        Team
 	RoundTimeLeft Second
+}
+
+type Team struct {
+	Players []PlayerData
+	ClanTag string
 }
 
 type Second time.Duration
 
 // Contans current state for a single player
 type PlayerData struct {
+	Name              string   // Player's in-game name
+	Id                int      // Id 1...10 to be displayed on the map
 	Position          Position // Coordinates of player on 1024*1024 map image
 	LastAlivePosition Position // Position where player was last alive, used when isAlive == false
 	Team              byte     // 2 = T, 3 = CT
@@ -34,12 +42,29 @@ type engine struct {
 	mapMetadata          *Map
 	roundFreezeTimeEndAt time.Duration
 	roundEndedAt         time.Duration
+	playerIds            map[string]int // 1...10
+}
+
+func (e *engine) constructPlayerIds(playersT []*common.Player, playersCt []*common.Player) {
+	pIds := make(map[string]int)
+	for i := range playersT {
+		pIds[playersT[i].Name] = i + 1
+	}
+	for i := range playersCt {
+		pIds[playersCt[i].Name] = i + 6
+	}
 }
 
 // Responsible for deriving useful state from demoinfocs.GameState and returning it
 func (e *engine) getUsefulState(state demoinfocs.GameState, currentTime time.Duration) StateResult {
-	players := state.Participants().Playing()
-	playersData := make([]PlayerData, 0, len(players))
+	playersT := state.TeamTerrorists().Members()
+	playersCt := state.TeamCounterTerrorists().Members()
+	if e.playerIds == nil {
+		e.constructPlayerIds(playersT, playersCt)
+	}
+
+	playersDataT := make([]PlayerData, 0, len(playersT))
+	playersDataCt := make([]PlayerData, 0, len(playersCt))
 
 	timeLimit, err := state.Rules().RoundTime()
 	if err != nil {
@@ -48,13 +73,26 @@ func (e *engine) getUsefulState(state demoinfocs.GameState, currentTime time.Dur
 
 	roundTime := e.calculateRoundLeftTime(timeLimit, currentTime)
 
-	for i := range players {
-		pd := e.constructPlayerData(players[i])
-		playersData = append(playersData, pd)
+	for i := range playersT {
+		pd := e.constructPlayerData(playersT[i])
+		playersDataT = append(playersDataT, pd)
+	}
+	teamT := Team{
+		Players: playersDataT,
+		ClanTag: state.TeamTerrorists().ClanName(),
+	}
+	for i := range playersCt {
+		pd := e.constructPlayerData(playersCt[i])
+		playersDataCt = append(playersDataCt, pd)
+	}
+	teamCt := Team{
+		Players: playersDataCt,
+		ClanTag: state.TeamCounterTerrorists().ClanName(),
 	}
 
 	return StateResult{
-		Players:       playersData,
+		TeamT:         teamT,
+		TeamCt:        teamCt,
 		RoundTimeLeft: roundTime,
 	}
 }
@@ -75,6 +113,8 @@ func (e *engine) constructPlayerData(p *common.Player) PlayerData {
 	lastAlivePosX, lastAlivePosY := e.mapMetadata.TranslateScale(p.LastAlivePosition.X, p.LastAlivePosition.Y)
 
 	return PlayerData{
+		Name:              p.Name,
+		Id:                e.playerIds[p.Name],
 		Position:          Position{X: posX, Y: posY},
 		LastAlivePosition: Position{X: lastAlivePosX, Y: lastAlivePosY},
 		Team:              byte(p.Team),
