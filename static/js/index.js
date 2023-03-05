@@ -2,14 +2,28 @@ let ct_p;
 let t_p;
 let mapCanvas;
 let playersCanvas;
+let homeElement, screenElement
+const dimensions = 768
 
 function init() {
+    homeElement = document.getElementById("home")
+    screenElement = document.getElementById("screen")
+    screenElement.style.display = "none"
     mapCanvas = document.getElementById("game_map");
+    mapCanvas.width = dimensions
+    mapCanvas.height = dimensions
+    document.getElementById("canvas_container").style.height = dimensions
+    document.getElementById("canvas_container").style.width = dimensions
     playersCanvas = document.getElementById("players_canvas");
+    playersCanvas.width = dimensions
+    playersCanvas.height = dimensions
 }
 
 function drawMap(mapName) {
+    homeElement.style.display = "none"
+    screenElement.style.display ="grid"
     ctx = mapCanvas.getContext("2d");
+    ctx.scale(dimensions/1024, dimensions/1024)
     const img = new Image();
     img.onload = () => {
         ctx.drawImage(img, 0, 0);
@@ -23,7 +37,8 @@ function updateState(currentState) {
     players = state.Players
 
     ctx.reset()
-    
+    ctx.scale(dimensions/1024, dimensions/1024)
+
     for (let i = 0; i < players.length; i++) {
         p = players[i]
         if (p.IsAlive) {

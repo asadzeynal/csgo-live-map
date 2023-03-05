@@ -14,7 +14,7 @@
     </script>
 </head>
 <body class="dark" onload="init();">
-    <div class="grid grid-cols-3 gap-4 justify-items-center">
+    <div id="home" class="grid grid-cols-3 gap-4 justify-items-center">
         <img class="col-start-2 col-end-2 w-full grow" src="img/logo.png">
         <div class="col-start-2 col-end-2 w-full grow">
             <label class="block w-full mb-2 text-sm font-medium text-white" for="file_input">Select demo file</label>
@@ -25,20 +25,16 @@
             file:border-orange-200 file:border file:mr-4 file:p-2 hover:file:bg-orange-100 hover:file:text-indigo-500" id="file_input" type="file">
         </div>
     </div>
-<!-- <div id="screen">
-    <button id="play_button">play/pause</button>
-    <div id="player_info_t">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
+<div id="screen" class="grid grid-cols-3 gap-4 items-center	justify-items-center">
+    <img class="col-start-2 col-end-2 h-1/2 grow" src="img/logo_inline.png">
+    <div class="col-start-2 grid-cols-3">
+        <div id="canvas_container" class="relative">
+            <canvas class="absolute top-0 left-0 game_canvas" id="game_map" width="1024" height="1024"></canvas>
+            <canvas class="absolute top-0 left-0 game_canvas" id="players_canvas" width="1024" height="1024"></canvas>        
+        </div>
     </div>
-   <div id="canvas_container">
-    <canvas class="game_canvas" id="game_map" width="1024" height="1024"></canvas>
-    <canvas class="game_canvas" id="players_canvas" width="1024" height="1024"></canvas>    
-   </div>
-</div> -->
+   <button id="play_button">play/pause</button>
+</div>
 
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script> -->
 </body>
