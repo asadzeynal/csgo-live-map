@@ -165,6 +165,7 @@ func (dp *DemoPlayer) initPlayback() {
 	c := t.C
 
 	go func() {
+		dp.result <- dp.nextTick()
 		for {
 			<-c
 			dp.result <- dp.nextTick()

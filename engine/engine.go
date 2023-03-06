@@ -30,6 +30,11 @@ type PlayerData struct {
 	Team              byte     // 2 = T, 3 = CT
 	IsAlive           bool     // true if player is alive
 	ViewDirection     float32  // 0-360 direction where player is looking on the 2d plane
+	Kills             int
+	Assists           int
+	Deaths            int
+	Money             int
+	Equipped          string
 }
 
 // Position of an entity on the map
@@ -53,6 +58,7 @@ func (e *engine) constructPlayerIds(playersT []*common.Player, playersCt []*comm
 	for i := range playersCt {
 		pIds[playersCt[i].Name] = i + 6
 	}
+	e.playerIds = pIds
 }
 
 // Responsible for deriving useful state from demoinfocs.GameState and returning it
@@ -112,6 +118,11 @@ func (e *engine) constructPlayerData(p *common.Player) PlayerData {
 	posX, posY := e.mapMetadata.TranslateScale(demoPos.X, demoPos.Y)
 	lastAlivePosX, lastAlivePosY := e.mapMetadata.TranslateScale(p.LastAlivePosition.X, p.LastAlivePosition.Y)
 
+	var equipped string
+	if p.ActiveWeapon() != nil {
+		equipped = p.ActiveWeapon().String()
+	}
+
 	return PlayerData{
 		Name:              p.Name,
 		Id:                e.playerIds[p.Name],
@@ -120,5 +131,10 @@ func (e *engine) constructPlayerData(p *common.Player) PlayerData {
 		Team:              byte(p.Team),
 		IsAlive:           p.IsAlive(),
 		ViewDirection:     p.ViewDirectionX(),
+		Kills:             p.Kills(),
+		Assists:           p.Assists(),
+		Deaths:            p.Deaths(),
+		Money:             p.Money(),
+		Equipped:          equipped,
 	}
 }
