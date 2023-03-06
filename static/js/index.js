@@ -54,11 +54,30 @@ function updateState(currentState) {
     }
 
     fillTable(teamT, teamCt)
+
+    let nades = state.Nades
+    drawNades(ctx_pl, nades)
+}
+
+function drawNades(ctx, nades) {
+    for (let i = 0; i < nades.length; i++) {
+        let nade = nades[i]
+        ctx.beginPath();
+        ctx.moveTo(nade.Positions[0].X, nade.Positions[0].Y)
+        for (let j = 1; j < nade.Positions.length; j++) {
+            pos = nade.Positions[j]
+            ctx.lineTo(pos.X, pos.Y);
+            ctx.moveTo(pos.X, pos.Y);
+        }
+        ctx.strokeStyle = "white"
+        ctx.closePath()
+        ctx.stroke()
+    }
 }
 
 function sortPlayers(a, b) {
     let scoreA = (a.Kills * 2) + a.Assists
-    let scoreB = (b.Kills * 2) + b.Assists 
+    let scoreB = (b.Kills * 2) + b.Assists
     let diff = scoreB - scoreA;
     if (diff == 0) {
         return a.Id - b.Id
@@ -70,7 +89,7 @@ function fillTable(teamT, teamCt) {
     teamT.Players.sort(sortPlayers);
     for (let i = 0; i < teamT.Players.length; i++) {
         let p = teamT.Players[i]
-        let row = document.getElementById(`p${i+1}`)  
+        let row = document.getElementById(`p${i + 1}`)
         row.querySelector("#name").textContent = `${p.Id} ${p.Name}`
         row.querySelector("#money").textContent = p.Money
         row.querySelector("#equipped").textContent = p.Equipped
@@ -80,7 +99,7 @@ function fillTable(teamT, teamCt) {
     teamCt.Players.sort(sortPlayers);
     for (let i = 0; i < teamCt.Players.length; i++) {
         let p = teamCt.Players[i]
-        let row = document.getElementById(`p${i+6}`)  
+        let row = document.getElementById(`p${i + 6}`)
         row.querySelector("#name").textContent = `${p.Id} ${p.Name}`
         row.querySelector("#money").textContent = p.Money
         row.querySelector("#equipped").textContent = p.Equipped
