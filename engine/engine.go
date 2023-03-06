@@ -12,6 +12,7 @@ type StateResult struct {
 	TeamT         Team
 	TeamCt        Team
 	RoundTimeLeft Second
+	Nades         []Nade
 }
 
 type Team struct {
@@ -35,6 +36,11 @@ type PlayerData struct {
 	Deaths            int
 	Money             int
 	Equipped          string
+}
+
+type Nade struct {
+	Positions []Position
+	Type      string
 }
 
 // Position of an entity on the map
@@ -96,11 +102,31 @@ func (e *engine) getUsefulState(state demoinfocs.GameState, currentTime time.Dur
 		ClanTag: state.TeamCounterTerrorists().ClanName(),
 	}
 
+	currentNades := state.GrenadeProjectiles()
+	nadesRes := e.calculateNadeTrajectories(currentNades)
+
 	return StateResult{
 		TeamT:         teamT,
 		TeamCt:        teamCt,
 		RoundTimeLeft: roundTime,
+		Nades:         nadesRes,
 	}
+}
+
+func (e *engine) calculateNadeTrajectories(nades map[int]*common.GrenadeProjectile) []Nade {
+	res := make([]Nade, 0, len(nades))
+	for i := range nades {
+		nade := nades[i]
+		trajectory := nade.Trajectory
+		positions := make([]Position, 0, len(trajectory))
+		for j := range trajectory {
+			coords := trajectory[j]
+			x, y := e.mapMetadata.TranslateScale(coords.X, coords.Y)
+			positions = append(positions, Position{X: x, Y: y})
+		}
+		res = append(res, Nade{Positions: positions, Type: nade.WeaponInstance.String()})
+	}
+	return res
 }
 
 func (e *engine) calculateRoundLeftTime(timeLimit time.Duration, currentTime time.Duration) Second {
