@@ -13,3 +13,6 @@ make run
 ## Contributing
 
 Pull requests are more than welcome. 
+
+## Acknowledgements
+This app uses [demoinfocs-golang](https://github.com/markus-wa/demoinfocs-golang) to parse CS:GO demos. Big thanks to [Markus](https://github.com/markus-wa) for this amazing repo.
