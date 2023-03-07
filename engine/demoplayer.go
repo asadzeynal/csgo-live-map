@@ -52,6 +52,10 @@ func (dp *DemoPlayer) PlayPause() {
 }
 
 func (dp *DemoPlayer) NextRound() {
+	nextRound := dp.e.currentRound + 1
+	for dp.e.currentRound != nextRound {
+		dp.nextTick()
+	}
 }
 
 func (dp *DemoPlayer) Pause() {
