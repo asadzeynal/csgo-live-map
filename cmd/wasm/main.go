@@ -25,6 +25,10 @@ func main() {
 	setOnClickHandler(btnPause, player.Pause)
 	btnPlay := getElementById("play_button")
 	setOnClickHandler(btnPlay, player.Play)
+	btnNextRound := getElementById("next_round_button")
+	setOnClickHandler(btnNextRound, player.NextRound)
+	btnPrevRound := getElementById("prev_round_button")
+	setOnClickHandler(btnPrevRound, player.PrevRound)
 
 	for {
 		state := player.WaitForStateUpdate()
