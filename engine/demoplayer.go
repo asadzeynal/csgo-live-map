@@ -57,17 +57,19 @@ func (dp *DemoPlayer) NextRound() {
 	for dp.e.currentRound != nextRound {
 		dp.nextTick()
 	}
+	dp.result <- dp.nextTick()
 }
 
 func (dp *DemoPlayer) PrevRound() {
 	prevRound := dp.e.currentRound - 1
-	dp.Stop()
+	dp.stopInternal()
 	if prevRound < 1 {
 		return
 	}
 	for dp.e.currentRound != prevRound {
-		dp.NextRound()
+		dp.parser.ParseNextFrame()
 	}
+	dp.result <- dp.nextTick()
 }
 
 func (dp *DemoPlayer) Pause() {
@@ -86,14 +88,22 @@ func (dp *DemoPlayer) Play() {
 	dp.IsPaused = false
 }
 
-func (dp *DemoPlayer) Stop() {
+func (dp *DemoPlayer) stopInternal() {
 	dp.Pause()
 	dp.parser.Cancel()
 	dp.parser.Close()
+	dp.e.currentRound = 1
+	dp.e.scoreCt = 0
+	dp.e.scoreT = 0
 	dp.parser = demoinfocs.NewParser(bytes.NewReader(dp.file))
+	dp.registerEventHandlers()
 	for !dp.parser.GameState().IsMatchStarted() {
 		dp.parser.ParseNextFrame()
 	}
+}
+
+func (dp *DemoPlayer) Stop() {
+	dp.stopInternal()
 	dp.result <- dp.nextTick()
 }
 
@@ -118,6 +128,25 @@ func (dp *DemoPlayer) nextTick() StateResult {
 
 func (dp *DemoPlayer) WaitForStateUpdate() StateResult {
 	return <-dp.result
+}
+
+func (dp *DemoPlayer) registerEventHandlers() {
+	dp.parser.RegisterEventHandler(func(event events.RoundFreezetimeEnd) {
+		dp.e.roundFreezeTimeEndAt = dp.parser.CurrentTime()
+	})
+
+	dp.parser.RegisterEventHandler(func(event events.RoundEnd) {
+		dp.e.roundEndedAt = dp.parser.CurrentTime()
+		if event.Winner == 2 {
+			dp.e.scoreT++
+		} else {
+			dp.e.scoreCt++
+		}
+	})
+	dp.parser.RegisterEventHandler(func(event events.RoundEndOfficial) {
+		dp.e.currentRound++
+	})
+
 }
 
 func GetPlayer(fileRaw []byte) (*DemoPlayer, error) {
@@ -147,28 +176,16 @@ func GetPlayer(fileRaw []byte) (*DemoPlayer, error) {
 		result:        make(chan StateResult),
 	}
 
-	e := engine{}
+	e := engine{
+		currentRound: 1,
+	}
 
 	p.RegisterNetMessageHandler(func(msg *msg.CSVCMsg_ServerInfo) {
 		mmd := GetMapMetadata(mapName, msg.GetMapCrc())
 		e.mapMetadata = &mmd
 	})
 
-	p.RegisterEventHandler(func(event events.RoundFreezetimeEnd) {
-		e.roundFreezeTimeEndAt = p.CurrentTime()
-	})
-
-	p.RegisterEventHandler(func(event events.RoundEnd) {
-		e.roundEndedAt = p.CurrentTime()
-		if event.Winner == 2 {
-			e.scoreT++
-		} else {
-			e.scoreCt++
-		}
-	})
-	p.RegisterEventHandler(func(event events.RoundStart) {
-		e.currentRound++
-	})
+	player.registerEventHandlers()
 
 	for !p.GameState().IsMatchStarted() {
 		p.ParseNextFrame()
