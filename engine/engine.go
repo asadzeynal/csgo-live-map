@@ -13,6 +13,9 @@ type StateResult struct {
 	TeamCt        Team
 	RoundTimeLeft Second
 	Nades         []Nade
+	ScoreT        int
+	ScoreCt       int
+	CurrentRound  int
 }
 
 type Team struct {
@@ -36,6 +39,7 @@ type PlayerData struct {
 	Deaths            int
 	Money             int
 	Equipped          string
+	HP                int
 }
 
 type Nade struct {
@@ -54,6 +58,9 @@ type engine struct {
 	roundFreezeTimeEndAt time.Duration
 	roundEndedAt         time.Duration
 	playerIds            map[string]int // 1...10
+	scoreT               int
+	scoreCt              int
+	currentRound         int
 }
 
 func (e *engine) constructPlayerIds(playersT []*common.Player, playersCt []*common.Player) {
@@ -110,6 +117,9 @@ func (e *engine) getUsefulState(state demoinfocs.GameState, currentTime time.Dur
 		TeamCt:        teamCt,
 		RoundTimeLeft: roundTime,
 		Nades:         nadesRes,
+		ScoreT:        e.scoreT,
+		ScoreCt:       e.scoreCt,
+		CurrentRound:  e.currentRound,
 	}
 }
 
@@ -162,5 +172,6 @@ func (e *engine) constructPlayerData(p *common.Player) PlayerData {
 		Deaths:            p.Deaths(),
 		Money:             p.Money(),
 		Equipped:          equipped,
+		HP:                p.Health(),
 	}
 }

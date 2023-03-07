@@ -51,6 +51,9 @@ func (dp *DemoPlayer) PlayPause() {
 	dp.Pause()
 }
 
+func (dp *DemoPlayer) NextRound() {
+}
+
 func (dp *DemoPlayer) Pause() {
 	if dp.IsPaused {
 		return
@@ -141,6 +144,14 @@ func GetPlayer(fileRaw []byte) (*DemoPlayer, error) {
 
 	p.RegisterEventHandler(func(event events.RoundEnd) {
 		e.roundEndedAt = p.CurrentTime()
+		if event.Winner == 2 {
+			e.scoreT++
+		} else {
+			e.scoreCt++
+		}
+	})
+	p.RegisterEventHandler(func(event events.RoundStart) {
+		e.currentRound++
 	})
 
 	for !p.GameState().IsMatchStarted() {
