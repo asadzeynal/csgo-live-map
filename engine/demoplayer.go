@@ -62,6 +62,9 @@ func (dp *DemoPlayer) NextRound() {
 func (dp *DemoPlayer) PrevRound() {
 	prevRound := dp.e.currentRound - 1
 	dp.Stop()
+	if prevRound < 1 {
+		return
+	}
 	for dp.e.currentRound != prevRound {
 		dp.NextRound()
 	}

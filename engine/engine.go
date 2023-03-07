@@ -13,14 +13,13 @@ type StateResult struct {
 	TeamCt        Team
 	RoundTimeLeft Second
 	Nades         []Nade
-	ScoreT        int
-	ScoreCt       int
 	CurrentRound  int
 }
 
 type Team struct {
 	Players []PlayerData
 	ClanTag string
+	Score   int
 }
 
 type Second time.Duration
@@ -98,6 +97,7 @@ func (e *engine) getUsefulState(state demoinfocs.GameState, currentTime time.Dur
 	}
 	teamT := Team{
 		Players: playersDataT,
+		Score:   e.scoreT,
 		ClanTag: state.TeamTerrorists().ClanName(),
 	}
 	for i := range playersCt {
@@ -106,6 +106,7 @@ func (e *engine) getUsefulState(state demoinfocs.GameState, currentTime time.Dur
 	}
 	teamCt := Team{
 		Players: playersDataCt,
+		Score:   e.scoreCt,
 		ClanTag: state.TeamCounterTerrorists().ClanName(),
 	}
 
@@ -117,8 +118,6 @@ func (e *engine) getUsefulState(state demoinfocs.GameState, currentTime time.Dur
 		TeamCt:        teamCt,
 		RoundTimeLeft: roundTime,
 		Nades:         nadesRes,
-		ScoreT:        e.scoreT,
-		ScoreCt:       e.scoreCt,
 		CurrentRound:  e.currentRound,
 	}
 }

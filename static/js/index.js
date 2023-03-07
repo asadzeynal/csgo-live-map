@@ -52,6 +52,8 @@ function updateState(currentState) {
 
     document.getElementById("clan_tag_t").textContent = teamT.ClanTag;
     document.getElementById("clan_tag_ct").textContent = teamCt.ClanTag;
+    document.getElementById("score_t").textContent = teamT.Score
+    document.getElementById("score_ct").textContent = teamCt.Score
 
     ctx_pl.reset();
     ctx_pl.scale(dimensions / 1024, dimensions / 1024);
