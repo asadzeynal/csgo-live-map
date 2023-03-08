@@ -58,11 +58,11 @@ function updateState(currentState) {
     ctx_pl.reset();
     ctx_pl.scale(dimensions / 1024, dimensions / 1024);
     for (let i = 0; i < teamT.Players.length + teamCt.Players.length; i++) {
-        p = [...teamT.Players, ...teamCt.Players][i];
-        if (p.IsAlive) {
-            drawAlivePlayer(ctx_pl, p);
-        } else {
+        p = [...teamT.Players, ...teamCt.Players].sort(sortPlayersById)[i];
+        if (!p.IsAlive) {
             drawDeadPlayer(ctx_pl, p);
+        } else {
+            drawAlivePlayer(ctx_pl, p);
         }
     }
 
@@ -113,7 +113,7 @@ function getNadeImg(type) {
     return null
 }
 
-function sortPlayers(a, b) {
+function sortPlayersByScore(a, b) {
     let scoreA = (a.Kills * 2) + a.Assists;
     let scoreB = (b.Kills * 2) + b.Assists;
     let diff = scoreB - scoreA;
@@ -123,14 +123,18 @@ function sortPlayers(a, b) {
     return diff
 }
 
+function sortPlayersById(a, b) {
+    return a.Id - b.Id
+}
+
 function fillTable(teamT, teamCt) {
-    teamT.Players.sort(sortPlayers);
+    teamT.Players.sort(sortPlayersByScore);
     for (let i = 0; i < teamT.Players.length; i++) {
         let row = document.getElementById(`p${i + 1}`)
         insertPlayerData(row, teamT.Players[i])
     }
 
-    teamCt.Players.sort(sortPlayers);
+    teamCt.Players.sort(sortPlayersByScore);
     for (let i = 0; i < teamCt.Players.length; i++) {
         let row = document.getElementById(`p${i + 6}`)
         insertPlayerData(row, teamCt.Players[i])
@@ -174,22 +178,45 @@ function drawDeadPlayer(ctx, p) {
 function drawAlivePlayer(ctx, p) {
     const r = 7
     pos = p.Position
+    let fillStyle;
     if (p.Team == 2) {
-        ctx.fillStyle = "orange"
+        fillStyle = "orange"
     } else {
-        ctx.fillStyle = "#219ebc"
+        fillStyle = "#219ebc"
     }
 
+    var hpDown = (100 - p.HP) / 100
+
     ctx.save();
-    ctx.translate(pos.X, pos.Y)
-    ctx.rotate((- p.ViewDirection - 90) * Math.PI / 180.0);
-    ctx.translate(-pos.X, -pos.Y)
+    ctx.fillStyle = fillStyle;
+    ctx.globalCompositeOperation = "destination-over";
     ctx.beginPath();
-    ctx.arc(pos.X, pos.Y, r, 0, 2 * Math.PI);
+    ctx.translate(pos.X, pos.Y);
+    ctx.rotate((- p.ViewDirection - 90) * Math.PI / 180.0);
+    ctx.translate(-pos.X, -pos.Y);
+    ctx.arc(pos.X, pos.Y, r, 0.5 * Math.PI + hpDown * Math.PI + 0.001, 0.5 * Math.PI - hpDown * Math.PI, false);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.fillStyle = "black";
+    ctx.arc(pos.X, pos.Y, r, 0.5 * Math.PI + hpDown * Math.PI + 0.001, 0.5 * Math.PI - hpDown * Math.PI, true);
+    
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = fillStyle;
+
+    ctx.beginPath()
+    ctx.strokeStyle = "white"
+    ctx.lineWidth = 2
+    ctx.arc(pos.X, pos.Y, r + 0.5, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.closePath();
+
     ctx.moveTo(pos.X - r / 2, pos.Y + r + 2);
     ctx.lineTo(pos.X, pos.Y + r + r);
     ctx.lineTo(pos.X + r / 2, pos.Y + r + 2);
-    ctx.closePath()
     ctx.fill();
+    ctx.stroke();
     ctx.restore();
 }
