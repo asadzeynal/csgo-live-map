@@ -13,6 +13,7 @@ type StateResult struct {
 	TeamCt        Team
 	RoundTimeLeft Second
 	Nades         []Nade
+	Infernos      []Inferno
 	CurrentRound  int
 }
 
@@ -20,6 +21,10 @@ type Team struct {
 	Players []PlayerData
 	ClanTag string
 	Score   int
+}
+
+type Inferno struct {
+	BorderPositions []Position
 }
 
 type Second time.Duration
@@ -110,16 +115,33 @@ func (e *engine) getUsefulState(state demoinfocs.GameState, currentTime time.Dur
 		ClanTag: state.TeamCounterTerrorists().ClanName(),
 	}
 
-	currentNades := state.GrenadeProjectiles()
-	nadesRes := e.calculateNadeTrajectories(currentNades)
+	nades := e.calculateNadeTrajectories(state.GrenadeProjectiles())
+	infernos := e.calculateInfernosBorders(state.Infernos())
 
 	return StateResult{
 		TeamT:         teamT,
 		TeamCt:        teamCt,
 		RoundTimeLeft: roundTime,
-		Nades:         nadesRes,
+		Nades:         nades,
+		Infernos:      infernos,
 		CurrentRound:  e.currentRound,
 	}
+}
+
+func (e *engine) calculateInfernosBorders(infernos map[int]*common.Inferno) []Inferno {
+	res := make([]Inferno, 0, len(infernos))
+	for k := range infernos {
+		inferno := infernos[k]
+		fires := inferno.Fires().Active().ConvexHull2D()
+		borders := make([]Position, 0, len(fires))
+		for i := range fires {
+			coords := fires[i]
+			x, y := e.mapMetadata.TranslateScale(coords.X, coords.Y)
+			borders = append(borders, Position{X: x, Y: y})
+		}
+		res = append(res, Inferno{BorderPositions: borders})
+	}
+	return res
 }
 
 func (e *engine) calculateNadeTrajectories(nades map[int]*common.GrenadeProjectile) []Nade {
