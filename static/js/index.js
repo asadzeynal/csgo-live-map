@@ -4,7 +4,7 @@ let mapCanvas;
 let playersCanvas;
 let homeElement, screenElement
 const dimensions = 900
-let imgFlash = new Image(), imgHe = new Image(), imgDecoy = new Image(), imgSmoke = new Image(),imgIncendiary = new Image(), imgMolo = new Image();
+let imgFlash = new Image(), imgHe = new Image(), imgDecoy = new Image(), imgSmoke = new Image(), imgIncendiary = new Image(), imgMolo = new Image();
 
 function loadNades() {
     imgFlash.src = "../img/nade_flash.webp";
@@ -126,23 +126,23 @@ function sortPlayers(a, b) {
 function fillTable(teamT, teamCt) {
     teamT.Players.sort(sortPlayers);
     for (let i = 0; i < teamT.Players.length; i++) {
-        let p = teamT.Players[i]
         let row = document.getElementById(`p${i + 1}`)
-        row.querySelector("#name").textContent = `${p.Id} ${p.Name}`
-        row.querySelector("#money").textContent = p.Money
-        row.querySelector("#equipped").textContent = p.Equipped
-        row.querySelector("#kda").textContent = `${p.Kills}/${p.Deaths}/${p.Assists}`
+        insertPlayerData(row, teamT.Players[i])
     }
 
     teamCt.Players.sort(sortPlayers);
     for (let i = 0; i < teamCt.Players.length; i++) {
-        let p = teamCt.Players[i]
         let row = document.getElementById(`p${i + 6}`)
-        row.querySelector("#name").textContent = `${p.Id} ${p.Name}`
-        row.querySelector("#money").textContent = p.Money
-        row.querySelector("#equipped").textContent = p.Equipped
-        row.querySelector("#kda").textContent = `${p.Kills}/${p.Deaths}/${p.Assists}`
+        insertPlayerData(row, teamCt.Players[i])
     }
+}
+
+function insertPlayerData(row, player) {
+    row.querySelector("#name").textContent = `${player.Id} ${player.Name}`;
+    row.querySelector("#hp").textContent = player.HP;
+    row.querySelector("#money").textContent = player.Money;
+    row.querySelector("#equipped").textContent = player.Equipped;
+    row.querySelector("#kda").textContent = `${player.Kills}/${player.Deaths}/${player.Assists}`;
 }
 
 function displayTimeLeft(duration) {
