@@ -29,6 +29,10 @@ func main() {
 	setOnClickHandler(btnNextRound, player.NextRound)
 	btnPrevRound := getElementById("prev_round_button")
 	setOnClickHandler(btnPrevRound, player.PrevRound)
+	btnFF := getElementById("2x_speed_button")
+	setOnClickHandler(btnFF, func() { player.ChangeSpeed(2) })
+	btnFR := getElementById("half_speed_button")
+	setOnClickHandler(btnFR, func() { player.ChangeSpeed(0.5) })
 
 	for {
 		state := player.WaitForStateUpdate()

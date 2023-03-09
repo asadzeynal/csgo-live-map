@@ -108,7 +108,7 @@ func (dp *DemoPlayer) Stop() {
 }
 
 func (dp *DemoPlayer) refreshTicker() {
-	dp.ticker.Reset(time.Second / time.Duration(dp.tickRate) * time.Duration(dp.playbackSpeed))
+	dp.ticker.Reset(dp.calculateTickerDuration())
 }
 
 func (dp *DemoPlayer) ChangeSpeed(speed float64) {
@@ -192,16 +192,22 @@ func GetPlayer(fileRaw []byte) (*DemoPlayer, error) {
 	}
 	tickRate := p.TickRate()
 
-	ticker := time.NewTicker(time.Second / time.Duration(tickRate) * time.Duration(player.playbackSpeed))
-	ticker.Stop()
-
 	player.e = &e
 	player.tickRate = tickRate
+
+	ticker := time.NewTicker(player.calculateTickerDuration())
+	ticker.Stop()
 	player.ticker = ticker
 
 	player.initPlayback()
 
 	return player, nil
+}
+
+func (dp *DemoPlayer) calculateTickerDuration() time.Duration {
+	timePerFrame := int(time.Second) / int(player.tickRate)
+	withSpeed := float64(timePerFrame) / dp.playbackSpeed
+	return time.Duration(withSpeed)
 }
 
 func (dp *DemoPlayer) initPlayback() {
