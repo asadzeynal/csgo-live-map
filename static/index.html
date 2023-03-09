@@ -1,188 +1,245 @@
 <html>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="css/main.css" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="wasm_exec.js"></script>
+        <script src="js/index.js"></script>
+        <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+        />
+        <script>
+            const go = new Go();
+            WebAssembly.instantiateStreaming(
+                fetch("main.wasm"),
+                go.importObject
+            ).then((result) => {
+                go.run(result.instance);
+            });
+        </script>
+    </head>
 
-<head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="css/main.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="wasm_exec.js"></script>
-    <script src="js/index.js"></script>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script>
-        const go = new Go();
-        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
-            go.run(result.instance);
-        });
-    </script>
-</head>
-
-<body class="dark" onload="init();">
-    <div id="home" class="grid grid-cols-3 gap-4 justify-items-center">
-        <img class="col-start-2 col-end-2 w-full grow" src="img/logo.png">
-        <div class="col-start-2 col-end-2 w-full grow">
-            <label class="block w-full mb-2 text-sm font-medium text-white" for="file_input">Select demo file</label>
-            <input class="block
-            w-full text-sm text-white border-dashed 
-            pt-4 pb-4 border border-orange-200
-            cursor-pointer bg-transparent focus:outline-none file:bg-transparent file:text-white file:ml-6 file:rounded file:border-solid
-            file:border-orange-200 file:border file:mr-4 file:p-2 hover:file:bg-orange-100 hover:file:text-gray-700"
-                id="file_input" type="file">
-        </div>
-    </div>
-    <div id="screen" class="hidden ml-2 flex justify-between">
-        <div class="flex-basis-1/2 mt-2">
-            <div class="flex items-center" id="match_info">
-                <div id="clan_tag_t"
-                    class="w-72 opacity-90 text-lg text-center text-white border-solid border px-4 py-2 mb-0">
-                </div>
-                <div id="score_t"
-                    class="w-16 opacity-90 text-xl text-center text-white border-solid border px-4 py-2 mb-0">
-                    0
-                </div>
-                <div id="time_left"
-                    class="text-white text-center text-xl border-solid border bg-orange-700 border-orange-7 px-4 py-2 mb-0">
-                    0:00
-                </div>
-                <div id="score_ct"
-                    class="w-16 opacity-90 text-xl text-center text-white border-solid border px-4 py-2 mb-0">
-                    0
-                </div>
-                <div id="clan_tag_ct"
-                    class="w-72 opacity-90 text-lg text-center text-white border-solid border px-4 py-2 mb-0">
-                </div>
-            </div>
-            <div class="w-full mt-4">
-                <table class="w-full text-white text-left table_t">
-                    <thead>
-                        <tr>
-                            <th class="w-2/5">Name</th>
-                            <th>HP</th>
-                            <th class="w-1/3">Equipped</th>
-                            <th class="w-1/12">$</th>
-                            <th class="">K/D/A</th>
-                        </tr>
-                    </thead>
-                    <tbody class="lineBgOrange">
-                        <tr id="p1">
-                            <td id="name"></td>
-                            <td id="hp"></td>
-                            <td id="equipped"></td>
-                            <td id="money"></td>
-                            <td id="kda"></td>
-                        </tr>
-                        <tr id="p2">
-                            <td id="name"></td>
-                            <td id="hp"></td>
-                            <td id="equipped"></td>
-                            <td id="money"></td>
-                            <td id="kda"></td>
-                        </tr>
-                        <tr id="p3">
-                            <td id="name"></td>
-                            <td id="hp"></td>
-                            <td id="equipped"></td>
-                            <td id="money"></td>
-                            <td id="kda"></td>
-                        </tr>
-                        <tr id="p4">
-                            <td id="name"></td>
-                            <td id="hp"></td>
-                            <td id="equipped"></td>
-                            <td id="money"></td>
-                            <td id="kda"></td>
-                        </tr>
-                        <tr id="p5">
-                            <td id="name"></td>
-                            <td id="hp"></td>
-                            <td id="equipped"></td>
-                            <td id="money"></td>
-                            <td id="kda"></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="text-white w-full text-left table_ct">
-                    <thead>
-                        <tr>
-                            <th class="w-2/5">Name</th>
-                            <th>HP</th>
-                            <th class="w-1/3">Equipped</th>
-                            <th class="w-1/12">$</th>
-                            <th class="">K/D/A</th>
-                        </tr>
-                    </thead>
-                    <tbody class="lineBgBlue">
-                        <tr id="p6">
-                            <td id="name"></td>
-                            <td id="hp"></td>
-                            <td id="equipped"></td>
-                            <td id="money"></td>
-                            <td id="kda"></td>
-                        </tr>
-                        <tr id="p7">
-                            <td id="name"></td>
-                            <td id="hp"></td>
-                            <td id="equipped"></td>
-                            <td id="money"></td>
-                            <td id="kda"></td>
-                        </tr>
-                        <tr id="p8">
-                            <td id="name"></td>
-                            <td id="hp"></td>
-                            <td id="equipped"></td>
-                            <td id="money"></td>
-                            <td id="kda"></td>
-                        </tr>
-                        <tr id="p9">
-                            <td id="name"></td>
-                            <td id="hp"></td>
-                            <td id="equipped"></td>
-                            <td id="money"></td>
-                            <td id="kda"></td>
-                        </tr>
-                        <tr id="p10">
-                            <td id="name"></td>
-                            <td id="hp"></td>
-                            <td id="equipped"></td>
-                            <td id="money"></td>
-                            <td id="kda"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div id="demo_controls" class="mt-4">
-                <button class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg" id="stop_button">
-                    <i class="material-icons">stop</i>
-                </button>
-                <button class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg"
-                    id="pause_button">
-                    <i class="material-icons">pause</i>
-                </button>
-                <button class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg"
-                    id="prev_round_button">
-                    <i class="material-icons">skip_previous</i>
-                </button>
-                <button class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg" id="half_speed_button">
-                    <i class="material-icons">fast_rewind</i>
-                </button>
-                <button class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg" id="play_button">
-                    <i class="material-icons">play_arrow</i>
-                </button>
-                <button class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg" id="2x_speed_button">
-                    <i class="material-icons">fast_forward</i>
-                </button>
-                <button class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg"
-                    id="next_round_button">
-                    <i class="material-icons">skip_next</i>
-                </button>
+    <body class="dark" onload="init();">
+        <div id="home" class="grid grid-cols-3 gap-4 justify-items-center">
+            <img class="col-start-2 col-end-2 w-full grow" src="img/logo.png" />
+            <div class="col-start-2 col-end-2 w-full grow">
+                <label
+                    class="block w-full mb-2 text-sm font-medium text-white"
+                    for="file_input"
+                    >Select demo file</label
+                >
+                <input
+                    class="block w-full text-sm text-white border-dashed pt-4 pb-4 border border-orange-200 cursor-pointer bg-transparent focus:outline-none file:bg-transparent file:text-white file:ml-6 file:rounded file:border-solid file:border-orange-200 file:border file:mr-4 file:p-2 hover:file:bg-orange-100 hover:file:text-gray-700"
+                    id="file_input"
+                    type="file"
+                />
             </div>
         </div>
-        <div class="flex-basis-1/2">
-            <div id="canvas_container" class="relative">
-                <canvas class="absolute top-0 left-0 game_canvas" id="game_map" width="1024" height="1024"></canvas>
-                <canvas class="absolute top-0 left-0 game_canvas" id="players_canvas" width="1024"
-                    height="1024"></canvas>
+        <div id="screen" class="hidden ml-2 flex justify-between">
+            <div class="flex-basis-1/2 mt-2">
+                <div class="flex items-center" id="match_info">
+                    <div
+                        id="clan_tag_t"
+                        class="w-72 opacity-90 text-lg text-center text-white border-solid border px-4 py-2 mb-0"
+                    ></div>
+                    <div
+                        id="score_t"
+                        class="w-16 opacity-90 text-xl text-center text-white border-solid border px-4 py-2 mb-0"
+                    >
+                        0
+                    </div>
+                    <div
+                        id="time_left"
+                        class="text-white text-center text-xl border-solid border bg-orange-700 border-orange-7 px-4 py-2 mb-0"
+                    >
+                        0:00
+                    </div>
+                    <div
+                        id="score_ct"
+                        class="w-16 opacity-90 text-xl text-center text-white border-solid border px-4 py-2 mb-0"
+                    >
+                        0
+                    </div>
+                    <div
+                        id="clan_tag_ct"
+                        class="w-72 opacity-90 text-lg text-center text-white border-solid border px-4 py-2 mb-0"
+                    ></div>
+                </div>
+                <div class="w-full mt-4">
+                    <table class="w-full text-white text-left table_t">
+                        <thead>
+                            <tr>
+                                <th class="w-2/5">Name</th>
+                                <th>HP</th>
+                                <th class="w-1/3">Equipped</th>
+                                <th class="w-1/12">$</th>
+                                <th class="">K/D/A</th>
+                            </tr>
+                        </thead>
+                        <tbody class="lineBgOrange">
+                            <tr id="p1">
+                                <td id="name"></td>
+                                <td id="hp"></td>
+                                <td id="equipped"></td>
+                                <td id="money"></td>
+                                <td id="kda"></td>
+                            </tr>
+                            <tr id="p2">
+                                <td id="name"></td>
+                                <td id="hp"></td>
+                                <td id="equipped"></td>
+                                <td id="money"></td>
+                                <td id="kda"></td>
+                            </tr>
+                            <tr id="p3">
+                                <td id="name"></td>
+                                <td id="hp"></td>
+                                <td id="equipped"></td>
+                                <td id="money"></td>
+                                <td id="kda"></td>
+                            </tr>
+                            <tr id="p4">
+                                <td id="name"></td>
+                                <td id="hp"></td>
+                                <td id="equipped"></td>
+                                <td id="money"></td>
+                                <td id="kda"></td>
+                            </tr>
+                            <tr id="p5">
+                                <td id="name"></td>
+                                <td id="hp"></td>
+                                <td id="equipped"></td>
+                                <td id="money"></td>
+                                <td id="kda"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="text-white w-full text-left table_ct">
+                        <thead>
+                            <tr>
+                                <th class="w-2/5">Name</th>
+                                <th>HP</th>
+                                <th class="w-1/3">Equipped</th>
+                                <th class="w-1/12">$</th>
+                                <th class="">K/D/A</th>
+                            </tr>
+                        </thead>
+                        <tbody class="lineBgBlue">
+                            <tr id="p6">
+                                <td id="name"></td>
+                                <td id="hp"></td>
+                                <td id="equipped"></td>
+                                <td id="money"></td>
+                                <td id="kda"></td>
+                            </tr>
+                            <tr id="p7">
+                                <td id="name"></td>
+                                <td id="hp"></td>
+                                <td id="equipped"></td>
+                                <td id="money"></td>
+                                <td id="kda"></td>
+                            </tr>
+                            <tr id="p8">
+                                <td id="name"></td>
+                                <td id="hp"></td>
+                                <td id="equipped"></td>
+                                <td id="money"></td>
+                                <td id="kda"></td>
+                            </tr>
+                            <tr id="p9">
+                                <td id="name"></td>
+                                <td id="hp"></td>
+                                <td id="equipped"></td>
+                                <td id="money"></td>
+                                <td id="kda"></td>
+                            </tr>
+                            <tr id="p10">
+                                <td id="name"></td>
+                                <td id="hp"></td>
+                                <td id="equipped"></td>
+                                <td id="money"></td>
+                                <td id="kda"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="demo_controls" class="mt-4">
+                    <button
+                        class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg"
+                        id="stop_button"
+                    >
+                        <i class="material-icons">stop</i>
+                    </button>
+                    <button
+                        class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg"
+                        id="pause_button"
+                    >
+                        <i class="material-icons">pause</i>
+                    </button>
+                    <button
+                        class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg"
+                        id="prev_round_button"
+                    >
+                        <i class="material-icons">skip_previous</i>
+                    </button>
+
+                    <button
+                        class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg"
+                        id="play_button"
+                    >
+                        <i class="material-icons">play_arrow</i>
+                    </button>
+                    <button
+                        class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg"
+                        id="next_round_button"
+                    >
+                        <i class="material-icons">skip_next</i>
+                    </button>
+                </div>
+                <div class="mt-4">
+                    <button
+                        class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg"
+                        id="btn_speed_1"
+                    >
+                        0.5x
+                    </button>
+                    <button
+                        class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg"
+                        id="btn_speed_2"
+                    >
+                        1x
+                    </button>
+                    <button
+                        class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg"
+                        id="btn_speed_3"
+                    >
+                        1.5x
+                    </button>
+                    <button
+                        class="border border-solid border-orange-200 text-orange-100 py-2 px-4 rounded-lg"
+                        id="btn_speed_4"
+                    >
+                        2x
+                    </button>
+                </div>
+            </div>
+            <div class="flex-basis-1/2">
+                <div id="canvas_container" class="relative">
+                    <canvas
+                        class="absolute top-0 left-0 game_canvas"
+                        id="game_map"
+                        width="1024"
+                        height="1024"
+                    ></canvas>
+                    <canvas
+                        class="absolute top-0 left-0 game_canvas"
+                        id="players_canvas"
+                        width="1024"
+                        height="1024"
+                    ></canvas>
+                </div>
             </div>
         </div>
-    </div>
-</body>
-
+    </body>
 </html>
