@@ -28,6 +28,7 @@ type Inferno struct {
 }
 
 type Second time.Duration
+type Millisecond time.Duration
 
 // Contans current state for a single player
 type PlayerData struct {
@@ -44,6 +45,7 @@ type PlayerData struct {
 	Money             int
 	Equipped          string
 	HP                int
+	FlashTimeLeft     Millisecond
 }
 
 type Nade struct {
@@ -180,6 +182,8 @@ func (e *engine) constructPlayerData(p *common.Player) PlayerData {
 		equipped = p.ActiveWeapon().String()
 	}
 
+	flashedUntil := p.FlashDurationTimeRemaining() / time.Millisecond
+
 	return PlayerData{
 		Name:              p.Name,
 		Id:                e.playerIds[p.Name],
@@ -194,5 +198,6 @@ func (e *engine) constructPlayerData(p *common.Player) PlayerData {
 		Money:             p.Money(),
 		Equipped:          equipped,
 		HP:                p.Health(),
+		FlashTimeLeft:     Millisecond(flashedUntil),
 	}
 }

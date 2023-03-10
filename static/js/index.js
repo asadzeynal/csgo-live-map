@@ -215,6 +215,14 @@ function drawAlivePlayer(ctx, p) {
     ctx.translate(pos.X, pos.Y);
     ctx.rotate(((-p.ViewDirection - 90) * Math.PI) / 180.0);
     ctx.translate(-pos.X, -pos.Y);
+
+    // Flash white
+    ctx.fillStyle = `rgba(255, 255, 255, ${p.FlashTimeLeft / 2500})`;
+    ctx.arc(pos.X, pos.Y, r, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.closePath();
+
+    ctx.beginPath();
     ctx.arc(
         pos.X,
         pos.Y,
@@ -236,9 +244,9 @@ function drawAlivePlayer(ctx, p) {
         0.5 * Math.PI - hpDown * Math.PI,
         true
     );
-
     ctx.closePath();
     ctx.fill();
+
     ctx.fillStyle = fillStyle;
 
     ctx.beginPath();
