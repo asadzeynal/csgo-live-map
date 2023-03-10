@@ -74,7 +74,6 @@ func (dp *DemoPlayer) PrevRound() {
 
 func (dp *DemoPlayer) Pause() {
 	if dp.IsPaused {
-		fmt.Println("isPaused")
 		return
 	}
 	dp.ticker.Stop()
@@ -115,7 +114,6 @@ func (dp *DemoPlayer) refreshTicker() {
 func (dp *DemoPlayer) ChangeSpeed(speed float64) {
 	dp.playbackSpeed = speed
 	dp.refreshTicker()
-	dp.Pause()
 }
 
 func (dp *DemoPlayer) nextTick() StateResult {
