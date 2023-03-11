@@ -11,6 +11,7 @@ let imgFlash = new Image(),
     imgIncendiary = new Image(),
     imgMolo = new Image();
 
+// Function that loads nade images
 function loadNades() {
     imgFlash.src = "../img/nade_flash.webp";
     imgHe.src = "../img/nade_he.webp";
@@ -20,6 +21,7 @@ function loadNades() {
     imgIncendiary.src = "../img/nade_incendiary.webp";
 }
 
+// Function that inits ui elements
 function init() {
     homeElement = document.getElementById("home");
     screenElement = document.getElementById("screen");
@@ -34,6 +36,7 @@ function init() {
     loadNades();
 }
 
+// Draws map on the canvas and scales it
 function drawMap(mapName) {
     homeElement.style.display = "none";
     screenElement.classList.remove("hidden");
@@ -46,6 +49,7 @@ function drawMap(mapName) {
     img.src = `../img/${mapName}_radar.png`;
 }
 
+// updates all elements in accordance with the current state coming from the app
 function updateState(currentState) {
     ctx_pl = playersCanvas.getContext("2d");
     const state = JSON.parse(currentState);
@@ -79,6 +83,7 @@ function updateState(currentState) {
     fillTable(teamT, teamCt);
 }
 
+// Draws fire from molotovs on the map
 function drawInfernos(ctx, infernos) {
     for (let i = 0; i < infernos.length; i++) {
         inferno = infernos[i];
@@ -92,6 +97,7 @@ function drawInfernos(ctx, infernos) {
     }
 }
 
+// Draws the trajectories of the nades and the nade itself at the end of the trajectory
 function drawNades(ctx, nades) {
     for (let i = 0; i < nades.length; i++) {
         let nade = nades[i];
@@ -115,6 +121,7 @@ function drawNades(ctx, nades) {
     }
 }
 
+// Returns correct nade image depending on string type
 function getNadeImg(type) {
     if (type == "Decoy Grenade") {
         return imgDecoy;
@@ -133,6 +140,7 @@ function getNadeImg(type) {
     return null;
 }
 
+// Sorts players by score (kills, assists)
 function sortPlayersByScore(a, b) {
     let scoreA = a.Kills * 2 + a.Assists;
     let scoreB = b.Kills * 2 + b.Assists;
@@ -143,10 +151,12 @@ function sortPlayersByScore(a, b) {
     return diff;
 }
 
+// Sorts players by their id 1...10
 function sortPlayersById(a, b) {
     return a.Id - b.Id;
 }
 
+// Fills score table 
 function fillTable(teamT, teamCt) {
     teamT.Players.sort(sortPlayersByScore);
     for (let i = 0; i < teamT.Players.length; i++) {
@@ -161,6 +171,8 @@ function fillTable(teamT, teamCt) {
     }
 }
 
+
+// Inserts player data into score table
 function insertPlayerData(row, player) {
     row.querySelector("#name").textContent = `${player.Id} ${player.Name}`;
     row.querySelector("#hp").textContent = player.HP;
@@ -171,6 +183,7 @@ function insertPlayerData(row, player) {
     ).textContent = `${player.Kills}/${player.Deaths}/${player.Assists}`;
 }
 
+// Displays round time left
 function displayTimeLeft(duration) {
     let timeElement = document.getElementById("time_left");
     let minutes = Math.floor(duration / 60);
@@ -181,6 +194,7 @@ function displayTimeLeft(duration) {
     timeElement.textContent = `${minutes}:${seconds}`;
 }
 
+// Draws "X" sign in place of dead player
 function drawDeadPlayer(ctx, p) {
     pos = p.LastAlivePosition;
     if (p.Team == 2) {
@@ -197,6 +211,7 @@ function drawDeadPlayer(ctx, p) {
     ctx.stroke();
 }
 
+// Draws a player on his current position. Displays him being flashed, low hp etc
 function drawAlivePlayer(ctx, p) {
     const r = 7;
     pos = p.Position;
