@@ -15,6 +15,7 @@ type StateResult struct {
 	Nades         []Nade
 	Infernos      []Inferno
 	CurrentRound  int
+	Bomb          Bomb
 }
 
 type Team struct {
@@ -46,6 +47,11 @@ type PlayerData struct {
 	Equipped          string
 	HP                int
 	FlashTimeLeft     Millisecond
+}
+
+type Bomb struct {
+	CarrierId int // 0 if no carrier
+	Position  Position
 }
 
 type Nade struct {
@@ -120,6 +126,8 @@ func (e *engine) getUsefulState(state demoinfocs.GameState, currentTime time.Dur
 	nades := e.calculateNadeTrajectories(state.GrenadeProjectiles())
 	infernos := e.calculateInfernosBorders(state.Infernos())
 
+	bomb := e.getBomb(state.Bomb())
+
 	return StateResult{
 		TeamT:         teamT,
 		TeamCt:        teamCt,
@@ -127,6 +135,22 @@ func (e *engine) getUsefulState(state demoinfocs.GameState, currentTime time.Dur
 		Nades:         nades,
 		Infernos:      infernos,
 		CurrentRound:  e.currentRound,
+		Bomb:          bomb,
+	}
+}
+
+func (e *engine) getBomb(bomb *common.Bomb) Bomb {
+	carrier := bomb.Carrier
+	bombPos := bomb.Position()
+	var carrierId int
+	if carrier != nil {
+		carrierId = e.playerIds[carrier.Name]
+	}
+	x, y := e.mapMetadata.TranslateScale(bombPos.X, bombPos.Y)
+
+	return Bomb{
+		CarrierId: carrierId,
+		Position:  Position{X: x, Y: y},
 	}
 }
 
