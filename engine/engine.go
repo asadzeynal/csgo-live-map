@@ -52,6 +52,8 @@ type PlayerData struct {
 type Bomb struct {
 	CarrierId int // 0 if no carrier
 	Position  Position
+	isPlanted bool
+	isDefused bool
 }
 
 type Nade struct {
@@ -153,6 +155,8 @@ func (e *engine) getBomb(bomb *common.Bomb) Bomb {
 	return Bomb{
 		CarrierId: carrierId,
 		Position:  Position{X: x, Y: y},
+		isPlanted: e.isBombPlanted,
+		isDefused: e.isBombDefused,
 	}
 }
 
