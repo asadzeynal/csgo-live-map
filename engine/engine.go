@@ -73,6 +73,8 @@ type engine struct {
 	scoreT               int
 	scoreCt              int
 	currentRound         int
+	isBombPlanted        bool
+	isBombDefused        bool
 }
 
 func (e *engine) constructPlayerIds(playersT []*common.Player, playersCt []*common.Player) {

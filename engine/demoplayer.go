@@ -142,9 +142,20 @@ func (dp *DemoPlayer) registerEventHandlers() {
 		} else {
 			dp.e.scoreCt++
 		}
+		dp.e.isBombDefused = false
+		dp.e.isBombPlanted = false
 	})
 	dp.parser.RegisterEventHandler(func(event events.RoundEndOfficial) {
 		dp.e.currentRound++
+	})
+
+	dp.parser.RegisterEventHandler(func(event events.BombPlanted) {
+		dp.e.isBombPlanted = true
+	})
+
+	dp.parser.RegisterEventHandler(func(event events.BombDefused) {
+		dp.e.isBombPlanted = false
+		dp.e.isBombDefused = true
 	})
 
 }
