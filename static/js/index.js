@@ -9,7 +9,8 @@ let imgFlash = new Image(),
     imgDecoy = new Image(),
     imgSmoke = new Image(),
     imgIncendiary = new Image(),
-    imgMolo = new Image();
+    imgMolo = new Image(),
+    imgBomb = new Image();
 
 // Function that loads nade images
 function loadNades() {
@@ -19,6 +20,7 @@ function loadNades() {
     imgSmoke.src = "../img/nade_smoke.webp";
     imgMolo.src = "../img/nade_molo.webp";
     imgIncendiary.src = "../img/nade_incendiary.webp";
+    imgBomb.src = "../img/bomb.png";
 }
 
 // Function that inits ui elements
@@ -68,6 +70,7 @@ function updateState(currentState) {
     ctx_pl.globalCompositeOperation = "destination-over";
     ctx_pl.scale(dimensions / 1024, dimensions / 1024);
 
+    drawBomb(ctx_pl, state.Bomb);
     drawInfernos(ctx_pl, state.Infernos);
     drawNades(ctx_pl, state.Nades);
 
@@ -81,6 +84,13 @@ function updateState(currentState) {
     }
 
     fillTable(teamT, teamCt);
+}
+
+// If bomb has no carrier (id = 0), draws it on the position
+function drawBomb(ctx, bomb) {
+    if (bomb.CarrierId == 0) {
+        ctx.drawImage(imgBomb, bomb.Position.X - 10, bomb.Position.Y - 10, 20, 20);
+    }
 }
 
 // Draws fire from molotovs on the map
@@ -156,7 +166,7 @@ function sortPlayersById(a, b) {
     return a.Id - b.Id;
 }
 
-// Fills score table 
+// Fills score table
 function fillTable(teamT, teamCt) {
     teamT.Players.sort(sortPlayersByScore);
     for (let i = 0; i < teamT.Players.length; i++) {
@@ -170,7 +180,6 @@ function fillTable(teamT, teamCt) {
         insertPlayerData(row, teamCt.Players[i]);
     }
 }
-
 
 // Inserts player data into score table
 function insertPlayerData(row, player) {
