@@ -77,6 +77,7 @@ type engine struct {
 	currentRound         int
 	isBombPlanted        bool
 	isBombDefused        bool
+	bombPlantedAt        time.Duration
 }
 
 func (e *engine) constructPlayerIds(playersT []*common.Player, playersCt []*common.Player) {
@@ -193,6 +194,9 @@ func (e *engine) calculateNadeTrajectories(nades map[int]*common.GrenadeProjecti
 }
 
 func (e *engine) calculateRoundLeftTime(timeLimit time.Duration, currentTime time.Duration) Second {
+	if e.isBombPlanted {
+		return Second(((time.Second * 45) - (currentTime - e.bombPlantedAt)) / time.Second)
+	}
 	if e.roundEndedAt >= e.roundFreezeTimeEndAt {
 		return 0
 	} else {

@@ -151,6 +151,7 @@ func (dp *DemoPlayer) registerEventHandlers() {
 
 	dp.parser.RegisterEventHandler(func(event events.BombPlanted) {
 		dp.e.isBombPlanted = true
+		dp.e.bombPlantedAt = dp.parser.CurrentTime()
 	})
 
 	dp.parser.RegisterEventHandler(func(event events.BombDefused) {
