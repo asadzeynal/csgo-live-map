@@ -1,6 +1,6 @@
 module github.com/asadzeynal/csgo-live-map
 
-go 1.20
+go 1.19
 
 require github.com/markus-wa/demoinfocs-golang/v3 v3.3.0
 
