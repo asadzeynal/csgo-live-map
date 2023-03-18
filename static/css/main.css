@@ -43,3 +43,15 @@
   	justify-content: center;
   	align-items: center;
  }
+
+.el_hidden {
+	visibility: hidden;
+	opacity: 0;
+	transition: visibility 0s 0.5s, opacity 0.5s linear;
+}
+
+.el_visible {
+	visibility: visible;
+	opacity: 1;
+	transition: opacity 0.5s linear;
+}

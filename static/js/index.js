@@ -89,7 +89,13 @@ function updateState(currentState) {
 // If bomb has no carrier (id = 0), draws it on the position
 function drawBomb(ctx, bomb) {
     if (bomb.CarrierId == 0) {
-        ctx.drawImage(imgBomb, bomb.Position.X - 10, bomb.Position.Y - 10, 20, 20);
+        ctx.drawImage(
+            imgBomb,
+            bomb.Position.X - 10,
+            bomb.Position.Y - 10,
+            20,
+            20
+        );
     }
 }
 
@@ -286,4 +292,15 @@ function drawAlivePlayer(ctx, p) {
     ctx.fill();
     ctx.stroke();
     ctx.restore();
+}
+
+function showError(msg) {
+    el = document.getElementById("error");
+    el.textContent = msg;
+    el.classList.remove("el_hidden");
+    el.classList.add("el_visible");
+    setTimeout(() => {
+        el.classList.remove("el_visible");
+        el.classList.add("el_hidden");
+    }, 5000);
 }
