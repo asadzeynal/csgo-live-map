@@ -54,3 +54,7 @@ func drawCurrentState(state engine.StateResult) {
 func drawMap(mapName string) {
 	js.Global().Call("drawMap", mapName)
 }
+
+func showError(msg string) {
+	js.Global().Call("showError", msg)
+}

@@ -1,22 +1,17 @@
 package main
 
 import (
-	"log"
+	"errors"
+	"fmt"
 
 	"github.com/asadzeynal/csgo-live-map/engine"
+	"github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs"
 )
 
 func main() {
 	stopChan := make(chan bool)
-	fileInput := getElementById("file_input")
 
-	file := <-setFileInputHandler(fileInput)
-
-	player, err := engine.GetPlayer(file)
-	if err != nil {
-		log.Panic("error when getting player: %v", err)
-	}
-
+	player := waitForPlayer()
 	drawMap(player.MapName)
 
 	btnStop := getElementById("stop_button")
@@ -45,4 +40,33 @@ func main() {
 	defer player.Close()
 
 	<-stopChan
+}
+
+func waitForPlayer() *engine.DemoPlayer {
+	err := errors.New("")
+	var player *engine.DemoPlayer
+	for err != nil {
+		player, err = initPlayer()
+		if err != nil {
+			fmt.Println(err)
+			if errors.As(err, &demoinfocs.ErrInvalidFileType) {
+				showError("Invalid file type")
+				continue
+			}
+			showError(err.Error())
+		}
+	}
+	return player
+}
+
+func initPlayer() (*engine.DemoPlayer, error) {
+	fileInput := getElementById("file_input")
+	file := <-setFileInputHandler(fileInput)
+
+	player, err := engine.GetPlayer(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return player, nil
 }
