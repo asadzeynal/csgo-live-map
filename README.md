@@ -1,6 +1,8 @@
 # Demovoi 🎯 (WIP)
 
-Demovoi is a Go - WebAssembly app that plays your CS:GO demos in 2D
+[Demovoi](https://lionfish-app-gpkyy.ondigitalocean.app/) is a Go - WebAssembly app that plays your CS:GO demos in 2D
+
+Currently available [here](https://lionfish-app-gpkyy.ondigitalocean.app/)
 
 ## How to run
 
