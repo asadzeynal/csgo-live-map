@@ -32,22 +32,19 @@ func NewFeed() *KillFeed {
 
 // Push an item to the list of last killFeeds. If length is maxed out, remove the oldest element
 func (f *KillFeed) pushFeedItem(fi *FeedItem) {
-	list := f.queue
-	switch f.length {
-	case 0:
-		list.Item = fi
-		f.length++
-		return
-	case f.maxLength:
-		list = list.Next
-	default:
-		f.length++
-	}
-	lastItem := list
-	for list.Next != nil {
-		list = list.Next
+	lastItem := f.queue
+	for f.queue.Next != nil {
+		lastItem = f.queue.Next
 	}
 	lastItem.Next = &FeedItemList{Item: fi, Next: nil}
+
+	if f.length == f.maxLength || f.length == 0 {
+		f.queue = f.queue.Next
+	}
+
+	if f.length != f.maxLength {
+		f.length++
+	}
 }
 
 func (f *KillFeed) getItems() []FeedItem {
