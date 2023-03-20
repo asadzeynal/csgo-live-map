@@ -54,14 +54,14 @@ func (e *engine) getUsefulState(state demoinfocs.GameState, currentTime time.Dur
 		pd := e.constructPlayerData(playersT[i])
 		playersDataT = append(playersDataT, pd)
 	}
+	for i := range playersCt {
+		pd := e.constructPlayerData(playersCt[i])
+		playersDataCt = append(playersDataCt, pd)
+	}
 	teamT := Team{
 		Players: playersDataT,
 		Score:   e.scoreT,
 		ClanTag: state.TeamTerrorists().ClanName(),
-	}
-	for i := range playersCt {
-		pd := e.constructPlayerData(playersCt[i])
-		playersDataCt = append(playersDataCt, pd)
 	}
 	teamCt := Team{
 		Players: playersDataCt,
